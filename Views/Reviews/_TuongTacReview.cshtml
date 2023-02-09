@@ -1,0 +1,30 @@
+@model ElectronicShop.Models.ReviewViewModel
+
+@if(Model == null)
+{
+    <h1 class="text-danger"> Khong tim thay Review id khong dung?</h1>
+}
+else{
+    <form asp-controller="Reviews" asp-action="SuaReview" asp-route-idSanPham="@Model.SanPhamId" method="post" enctype="application/x-www-form-urlencoded"> 
+                            <div class="mb-3 ">
+                                <div>
+                                    <label class="form-label h5" asp-for="SoSao"></label>
+                                </div>
+                                <input type="hidden" class="rating" value="@Model.SoSao" name="SoSao"/>
+                            </div>
+                            <div class="mb-3 text-start">
+                                <label class="form-label h5" asp-for="TieuDe"></label>
+                                <input type="text" class="form-control" value="@Model.TieuDe" autocomplete="off" name="TieuDe">
+                            </div>
+                            <div class="mb-3 text-start">
+                                <label class="form-label h5" asp-for="NoiDung"></label>
+                                <textarea class="form-control" name="NoiDung" style="height: auto;">@Model.NoiDung</textarea>
+                            </div>
+                            <button class="btn btn-secondary pe-3" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#taoReview" aria-expanded="false"
+                                aria-controls="collapseExample">Hủy</button>
+                            <button class="btn btn-success" type="submit">Lưu</button>
+                        </form>
+        <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>
+}
+        

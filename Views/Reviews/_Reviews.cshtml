@@ -1,0 +1,99 @@
+@model IEnumerable<ElectronicShop.Models.ReviewViewModel>
+@{
+
+  var soSaoSanPham = ViewData["soSaoSanPham"] as ElectronicShop.Models.ReviewViewModel;
+  var soSaoTrungBinh = soSaoSanPham?.SoSaoTrungBinh;
+  var soSaoCuThe = soSaoSanPham.SoSaoCuThe as Dictionary<string,int>;
+  var tongSoReview = soSaoSanPham.SoLuot;
+
+  var reviewOfUser = ViewData["ReviewOfUser"] as ElectronicShop.Models.ReviewViewModel;
+
+}
+        @if(reviewOfUser != null)
+            {
+            
+                <h4 class="text-center">Review của bạn</h4>
+                <div class="bg-white p-2 border border-primary">
+                    <div class="pb-2">
+                        <input id="star" type="hidden" class="rating" value="@reviewOfUser.SoSao" disabled />
+                    </div>
+                    <h5 class="mb-1">@reviewOfUser.TieuDe</h5>
+                    <p class=" mb-1">@reviewOfUser.NoiDung</p>
+                    <p class="mb-1 text-secondary">@reviewOfUser.NgayDang</p>
+                    <small>Review by @reviewOfUser.TacGia</small>
+                    <div>
+                        <button id="btnSuaReview" data-id="@reviewOfUser.SanPhamId" class="btn btn-success" type="button"> Chỉnh sửa</button>
+                        <button id="btnXoaReview" data-id="@reviewOfUser.SanPhamId"  class="btn btn-danger" type="button"> Xóa</button>
+                    </div>
+                </div>
+            }
+
+        <!-- Hien thi diem sao cua san pham -->
+        <h2 class="mb-3 text-center">Reviews </h2>
+        <div class="text-center mb-5 border-bottom row">
+            <div class=" mb-3 align-self-center">
+                <div class=" mb-3">
+                    <span class="me-3 lead"> 5<em class="bi-star-fill"></em> ( @soSaoCuThe["5sao"] )</span>
+                    <span class="me-3 lead"> 4<em class="bi-star-fill"></em> ( @soSaoCuThe["4sao"] )</span>
+                    <span class="me-3 lead"> 3<em class="bi-star-fill"></em> ( @soSaoCuThe["3sao"] )</span>
+                    <span class="me-3 lead"> 2<em class="bi-star-fill"></em> ( @soSaoCuThe["2sao"] )</span>
+                    <span class="me-3 lead"> 1<em class="bi-star-fill"></em> ( @soSaoCuThe["1sao"] )</span>
+            </div>
+                <div>
+                    <h3>
+                       @soSaoTrungBinh <em class="bi-star-fill"></em><span class="h3 text-black">( @tongSoReview )</span>
+                    </h3>
+                </div>
+            </div>
+            
+        </div>
+        <div class="list-group list-group-flush">
+            @if(Model.Count() == 0)
+            {
+                <h3 class="text-secondary text-center pb-5"> Chưa có bài đánh giá</h3>
+            }
+            else
+            {
+                @foreach(var review in Model)
+                {
+                    <div class="list-group-item mb-3 border">
+                        <div class="pb-2">
+                            <input id="star" type="hidden" class="rating" name="sao" value="@review.SoSao" disabled />
+                        </div>
+                        <h5 class="mb-1">
+                            @Html.DisplayFor(modelItem =>review.TieuDe)
+                        </h5>
+                        <p class=" mb-1">
+                            @Html.DisplayFor(modelItem =>review.NoiDung)
+                        </p>
+                        <p class="mb-1 text-secondary">
+                            @Html.DisplayFor(modelItem =>review.NgayDang)
+                        </p>
+                        <small>Review by @Html.DisplayFor(modelItem =>review.TacGia)</small>
+                    </div>
+                }
+            }
+            
+        </div>
+
+
+
+        <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>
+        <script>
+             $("button#btnXoaReview").click(function(){
+            var idSanPham = $(this).attr("data-id");
+            $.get("/Reviews/GetXoaReview?idSanPham=" + idSanPham,function(data){
+                $(".toast-body").html(data);
+                ShowToast();
+            });
+        });
+        
+        
+        $("button#btnSuaReview").click(function(){
+            var idSanPham = $(this).attr("data-id");
+            $.get("/Reviews/SuaReview?idSanPham=" + idSanPham,function(data){
+                $(".toast-body").html(data);
+                ShowToast();
+            });
+        });
+        </script>

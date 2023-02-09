@@ -1,0 +1,149 @@
+@model IEnumerable<ElectronicShop.Models.ProductViewModel>
+
+@using System.Text.Encodings.Web
+@inject HtmlEncoder htmlEncoder
+@{
+    var tuTimKiem = ViewData["tuTimKiem"];
+    var urlSanPhamTangDan = string.Format(
+      "/TimKiem/SanPhamGiaTangDan");
+    
+    var urlSanPhamGiamDan = string.Format(
+      "/TimKiem/SanPhamGiaGiamDan");
+    //string urlSanPhamTangDan = Url.Encode("/TimKiem/SanPhamGiaTangDan");
+}
+<h5 class="fw-light"> Kết quả từ tìm kiếm:<strong> @tuTimKiem </strong> </h5>
+@* @if(ViewData["message"] as IList<int> != null)
+    {
+        @foreach(var item in ViewData["message"] as IList<int>)
+        {   
+            <span> @item </span>
+        }
+    } *@
+
+
+<section id="timKiem">
+        <div class="container-xl bg-light py-3">
+            <div class="row justify-content-between">
+                <!-- Bo loc tim kiem -->
+                <div class="col-md-3  d-none d-md-block">
+                    <div class=" border border-1 bg-white px-3">
+                        <p class="my-3 text-center border-bottom">BỘ LỌC TÌM KIẾM</p>
+                        <!-- Lua chon Thuong hieu -->
+                        <form id="boLocTimKiem" asp-action="BoLocTimKiem" >
+                            <div class="border-bottom mb-3">
+                                <p>Loại</p>
+                                <div class="form-check ps-0">
+                                    <input type="checkbox" class="form-check-control"value="Tivi" name="Loai" id="radioTivi">
+                                    <label for="radioTivi" class="form-check-label">Tivi</label>
+                                </div>
+                                <div class="form-check ps-0">
+                                    <input type="checkbox" class="form-check-control" value="Amply" name="Loai" id="radioAmply">
+                                    <label for="radioAmply" class="form-check-label">Amply</label>
+                                </div>
+                                <div class="form-check ps-0">
+                                    <input type="checkbox" class="form-check-control" value="Loa" name="Loai" id="radioLoa">
+                                    <label for="radioLoa" class="form-check-label">Loa</label>
+                                </div>
+                            </div>
+                            <div class="border-bottom mb-3">
+                                <p>Thương hiệu</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Sony" name="ThuongHieu" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Sony
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Samsung" name="ThuongHieu" id="flexCheckChecked">
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        Samsung
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="LG" name="ThuongHieu" id="flexCheckChecked">
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        LG
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="border-bottom pb-3 mb-3 ">
+                                <p>Giá Tiền</p>
+                                <p class="m-0">Từ</p>
+                                <div class="col-9 input-group">
+                                    <input type="text" class="form-control number" name="Min" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"  placeholder="0">
+                                    <span class="input-group-text">đ</span>
+                                </div>
+                                <p class="m-0">Đến</p>
+                                <div class="col-9 input-group">
+                                    <input type="text" class="form-control number" name="Max" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" maxlength="12" placeholder="99,999,999">
+                                    <span class="input-group-text">đ</span>
+                                </div>
+                            </div> 
+                            <div class="text-center mb-3">
+                                <button type="submit" class="btn btn-primary " id="boLocTimKiem">Áp dụng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <!-- Thanh Sap Xep Theo -->
+                    <div class=" bg-white border border-1 align-items-center mb-3 d-none d-md-block">
+                        <div class="d-flex my-2 px-3">
+                            <p class="lead my-0 ">Sắp xếp theo:</p>
+                            <button  id="phoBien" class="btn btn-outline-primary ms-3 ms-md-5">
+                                <em class="bi bi-balloon-heart"></em>
+                                Phổ biến
+                            </button>
+                            <button id="tangDan" class="btn btn-outline-primary ms-3 ms-md-5">
+                                <em class="bi bi-arrow-up"></em>
+                                Giá tăng dần
+                            </button>
+                            <button id="giamDan" class="btn btn-outline-primary ms-3 ms-md-5">
+                                <em class="bi bi-arrow-down"></em>
+                                Giá giảm dần
+                            </button>
+
+                        </div>
+                    </div>
+                    <!-- Cac san pham tiem kiem -->
+                    @if( (ViewData["messageError"] != null))
+                    {
+                        <div class="text-center text-secondary my-5">
+                            <h2 class="fw-normal">@ViewData["messageError"]</h2>
+                            <i class="bi bi-box2 h1"></i>
+                        </div>
+                    }
+                    
+                    <div class="row row-cols-2 row-cols-md-3 g-4" id="khuTimKiem">
+                        @Html.Partial("_SanPhamTimKiem", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        $(document).ready(function(){
+            var khuHienThi = $("div#khuTimKiem");
+           
+            $("button#tangDan").click(function(){
+                event.preventDefault();
+                khuHienThi.load("@urlSanPhamTangDan");
+            });
+            $("button#giamDan").click(function(){
+                event.preventDefault();
+
+                khuHienThi.load("@urlSanPhamGiamDan");
+            });
+            $("input.number").keyup(function(){
+                var input = $(this);
+                var value = input.val();
+                var daThemDauPhay = ThemDauPhay(value);
+                input.val(daThemDauPhay);
+            });
+            function ThemDauPhay(number) {
+                var nfObject = new Intl.NumberFormat('en-US');
+               var output = nfObject.format(number);
+               return output;
+            }
+        });
+    </script>
