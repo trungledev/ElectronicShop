@@ -1,0 +1,353 @@
+using System.Text.RegularExpressions;
+
+namespace ElectronicShop.Controllers;
+
+public class ReviewsController : Controller,ICRUD
+{
+    private ApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public ReviewsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    {
+        _context = context;
+        _userManager = userManager;
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetReviewViewModel(int idSanPham)
+    {
+
+        var reviewsViewModels = new List<ReviewViewModel>();
+        var reviews = _context.Reviews.Where(x => x.SanPhamId == idSanPham);
+        //Data cua ViewData[]
+        var laySoSao = LaySoSaoTongQuat(idSanPham, _context);
+        var reviewOfUserViewModel = new ReviewViewModel();
+        if (reviews.Count() > 0)
+        {
+            foreach (var review in reviews)
+            {
+                reviewsViewModels.Add(new ReviewViewModel
+                {
+                    SanPhamId = idSanPham,
+                    TieuDe = review.TieuDe,
+                    NoiDung = review.NoiDung,
+                    NgayDang = review.NgayDang,
+                    SoSao = review.SoSao,
+                    TacGia = review.TacGia
+                });
+            }
+        }
+        else
+        {
+            reviewOfUserViewModel = null;
+        }
+        if (User.Identity!.IsAuthenticated)
+        {
+            //Khi nguoi dung da dang nhap => show Review cua nguoi dung dong dau tien
+            var idApplicationUser = await GetCurrentUserId();
+            var reviewOfUser = _context.Reviews.Where(x => x.SanPhamId == idSanPham && x.ApplicationUserId == idApplicationUser).FirstOrDefault();
+            if (reviewOfUser != null)
+            {
+                reviewOfUserViewModel = new ReviewViewModel()
+                {
+                    SanPhamId = idSanPham,
+                    SoSao = reviewOfUser.SoSao,
+                    TieuDe = reviewOfUser.TieuDe,
+                    NoiDung = reviewOfUser.NoiDung,
+                    NgayDang = reviewOfUser.NgayDang,
+                    TacGia = reviewOfUser.TacGia
+                };
+                //Day reivew qua ViewData[];
+                ViewData["ReviewOfUser"] = reviewOfUserViewModel;
+            }
+            else
+            {
+                ViewData["ReviewOfUser"] = null;
+            }
+
+        }
+        else
+            ViewData["ReviewOfUser"] = null;
+
+
+        ViewData["soSaoSanPham"] = laySoSao;
+
+
+        return PartialView("_Reviews", reviewsViewModels);
+    }
+    public static ReviewViewModel LaySoSaoTongQuat(int id, ApplicationDbContext context)
+    {
+        var _context = context;
+        var reviewsViewModel = new List<ReviewViewModel>();
+        var soSaoSanPham = new ReviewViewModel();
+        var reviews = _context.Reviews.Where(x => x.SanPhamId == id);
+        if (reviews != null)
+        {
+            var soReview = reviews.Count();
+            IDictionary<string, int> soSaoCuThe = new Dictionary<string, int>();
+            var reviewMotSao = from review in reviews
+                               where review.SoSao == 1
+                               select review;
+            var reviewHaiSao = from review in reviews
+                               where review.SoSao == 2
+                               select review;
+            var reviewBaSao = from review in reviews
+                              where review.SoSao == 3
+                              select review;
+            var reviewBonSao = from review in reviews
+                               where review.SoSao == 4
+                               select review;
+            var reviewNamSao = from review in reviews
+                               where review.SoSao == 5
+                               select review;
+            var soReviewMotSao = reviewMotSao.Count();
+            var soReviewHaiSao = reviewHaiSao.Count();
+            var soReviewBaSao = reviewBaSao.Count();
+            var soReviewBonSao = reviewBonSao.Count();
+            var soReviewNamSao = reviewNamSao.Count();
+
+
+            soSaoCuThe.Add("1sao", soReviewMotSao);
+            soSaoCuThe.Add("2sao", soReviewHaiSao);
+            soSaoCuThe.Add("3sao", soReviewBaSao);
+            soSaoCuThe.Add("4sao", soReviewBonSao);
+            soSaoCuThe.Add("5sao", soReviewNamSao);
+
+            var tongSoReview = (soReviewMotSao + soReviewHaiSao + soReviewBaSao + soReviewBonSao + soReviewNamSao);
+            double soSaoTrungBinh = 0;
+            if (tongSoReview > 0)
+                soSaoTrungBinh = (soReviewMotSao * 1 + soReviewHaiSao * 2 + soReviewBaSao * 3 + soReviewBonSao * 4 + soReviewNamSao * 5) / (double)tongSoReview;
+
+            soSaoSanPham = new ReviewViewModel
+            {
+                SoLuot = tongSoReview,
+                SoSaoTrungBinh = soSaoTrungBinh,
+                SoSaoCuThe = soSaoCuThe
+            };
+
+        }
+        else
+        {
+            //Khong Tim Thay San Pham
+        }
+        return soSaoSanPham;
+    }
+    [HttpPost]
+    public async Task<IActionResult> ThemReview([Bind(include: "SoSao,TieuDe,NoiDung")] ReviewViewModel reviewInput, int idSanPham)
+    {
+        var _idSanPham = idSanPham;
+        var _errorModel = new ErrorViewModel();
+        //Xac thuc Dang nhap
+        if (!User.Identity!.IsAuthenticated)
+        {
+            _errorModel.DaDangNhap = false;
+            _errorModel.Success = -1;
+            _errorModel.IdSanPham = _idSanPham;
+            _errorModel.Content = "Vui lòng đăng nhập để tiếp tục";
+            return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", _errorModel);
+            //return Redirect("/Identity/Account/Login");
+        }
+        else
+        {
+            var idApplicationUser = await GetCurrentUserId();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var hoVaTenUser = user.HoVaTen;
+            Console.WriteLine(" Email : " + hoVaTenUser);
+            if (_idSanPham != 0)
+            {
+                try
+                {
+                    var reviewInData = _context.Reviews.Where(x => x.ApplicationUserId == idApplicationUser && x.SanPhamId == _idSanPham).FirstOrDefault();
+                    if (reviewInData == null)
+                    {
+                        _context.Reviews.Add(new Review
+                        {
+                            SanPhamId = _idSanPham,
+                            ApplicationUserId = idApplicationUser,
+                            TieuDe = reviewInput.TieuDe,
+                            NoiDung = reviewInput.NoiDung,
+                            NgayDang = DateTime.Now,
+                            SoSao = reviewInput.SoSao,
+                            TacGia = hoVaTenUser
+
+                        });
+                        _context.SaveChanges();
+                        _errorModel.Success = 1;
+                        _errorModel.Content = "Review thành công";
+                        Console.WriteLine("Them Review");
+                        return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", _errorModel);
+                    }
+                    else
+                    {
+                        //Nguoi dung da review
+                        Console.WriteLine("Da Review?");
+                    }
+                        
+                }
+                catch (System.Data.DataException ex)
+                {
+                    //Loi Luu vaoData
+                    Console.WriteLine("Loi luu data" + ex.Message);
+                    throw;
+                }
+            }
+            else
+            {
+                //id san pham  = 0
+            }
+            return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", _errorModel);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DaReview(int idSanPham)
+    {
+        var _errorModel = new ErrorViewModel();
+        if (!User.Identity!.IsAuthenticated)
+        {
+            _errorModel.DaDangNhap = false;
+            _errorModel.Success = -1;
+            _errorModel.IdSanPham = idSanPham;
+            _errorModel.Content = "Vui lòng đăng nhập để tiếp tục";
+            return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", _errorModel);
+        }
+        else
+        {
+            _errorModel.DaDangNhap = true;
+            var idApplicationUser = await GetCurrentUserId();
+            var reviewInData = _context.Reviews.Where(x => x.ApplicationUserId == idApplicationUser && x.SanPhamId == idSanPham).FirstOrDefault();
+
+            if (reviewInData == null)
+            {
+                //Chua tao review
+                _errorModel.DaReview = false;
+                return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", _errorModel);
+            }
+            else
+            {
+                //Da tao review
+                _errorModel.DaReview = true;
+                _errorModel.Content = "Đã review";
+                return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", _errorModel);
+            }
+        }
+
+
+    }
+    [HttpGet]
+    public async Task<IActionResult> SuaReview(int idSanPham)
+    {
+        var _idSanPham = idSanPham;
+        if (_idSanPham == 0)
+        {
+            return PartialView("_TuongTacReview", null);
+        }
+        else
+        {
+
+            var reviewViewModel = new ReviewViewModel();
+            var idApplicationUser = await GetCurrentUserId();
+            var review = _context.Reviews.Where(x => x.ApplicationUserId == idApplicationUser && x.SanPhamId == _idSanPham).FirstOrDefault();
+            if (review != null)
+            {
+                reviewViewModel = new ReviewViewModel()
+                {
+                    SanPhamId = _idSanPham,
+                    SoSao = review.SoSao,
+                    TieuDe = review.TieuDe,
+                    NoiDung = review.NoiDung
+                };
+                return PartialView("_TuongTacReview", reviewViewModel);
+            }
+            else
+                return PartialView("_TuongTacReview", null);
+        }
+
+    }
+    [HttpPost]
+    public async Task<IActionResult> SuaReview([Bind(include: "SoSao,TieuDe,NoiDung")] ReviewViewModel reviewChinhSua, int idSanPham)
+    {
+        var errorModel = new ErrorViewModel();
+        var idApplicationUser = await GetCurrentUserId();
+        if (idSanPham == 0)
+        {
+            errorModel.Success = -1;
+            errorModel.Content = "Không tìm thấy sản phẩm";
+            return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", errorModel);
+        }
+        else
+        {
+            var review = _context.Reviews.Where(x => x.SanPhamId == idSanPham && x.ApplicationUserId == idApplicationUser).FirstOrDefault();
+            if (review != null)
+            {
+                try
+                {
+                    review.SoSao = reviewChinhSua.SoSao;
+                    review.TieuDe = reviewChinhSua.TieuDe;
+                    review.NoiDung = reviewChinhSua.NoiDung;
+                    _context.SaveChanges();
+
+                    errorModel.Success = 1;
+                    errorModel.Content = "Review đã được sửa";
+                    return RedirectToAction("ChiTiet", "SanPhams", new { id = idSanPham });
+                }
+                catch (System.Exception x)
+                {
+                    errorModel.Success = -1;
+                    errorModel.Content = x.Message + " +  Lỗi lưu data";
+                    return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", errorModel);
+                }
+
+            }
+            else
+            {
+                errorModel.Success = -1;
+                errorModel.Content = "Không tìm thấy review";
+                return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", errorModel);
+            }
+        }
+
+    }
+    [HttpGet]
+    public IActionResult GetXoaReview(int idSanPham)
+    {
+        var errorModel = new ErrorViewModel();
+        errorModel.XoaReview = true;
+        errorModel.IdSanPham = idSanPham;
+        errorModel.Content = " Xác nhận xóa";
+        return PartialView("~/Views/SanPhams/_ThongBaoLoi.cshtml", errorModel);
+    }
+    [HttpPost]
+    public async Task<JsonResult> XoaReview(int idSanPham)
+    {
+        var idApplicationUser = await GetCurrentUserId();
+        var review = _context.Reviews.Where(x => x.SanPhamId == idSanPham && x.ApplicationUserId == idApplicationUser).FirstOrDefault();
+        if (review != null)
+        {
+            try
+            {
+                _context.Reviews.Remove(review);
+                _context.SaveChanges();
+                return Json("Đã xóa");
+            }
+            catch (System.Exception ex)
+            {
+                return Json(ex.Message);
+                throw;
+            }
+        }
+        else
+        {
+            return Json("Lỗi không thấy review");
+        }
+
+    }
+    private Task<ApplicationUser> GetCurrentUserAsync() =>
+        _userManager.GetUserAsync(HttpContext.User);
+
+    [HttpGet]
+    public async Task<string> GetCurrentUserId()
+    {
+        ApplicationUser ApplicationUser = await GetCurrentUserAsync();
+        return ApplicationUser.Id;
+    }
+}

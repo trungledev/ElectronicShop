@@ -1,0 +1,60 @@
+namespace ElectronicShop.Controllers;
+
+public class CartController : Controller
+{
+    private ApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public CartController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    {
+        _userManager = userManager;
+        _context = context;
+    }
+    [HttpGet]
+    public async Task<string> GetCurrentUserIdAsync()
+    {
+        ApplicationUser ApplicationUser = await GetCurrentUserAsync();
+        return ApplicationUser.Id;
+    }
+    private Task<ApplicationUser> GetCurrentUserAsync() =>
+    _userManager.GetUserAsync(HttpContext.User);
+    public async Task<IActionResult> Index()
+    {
+        var userId = await GetCurrentUserIdAsync();
+        var sanPhamBans = _context.SanPhamBans.Where(x => x.ApplicationUserId == userId);
+        var gioHang = new List<GioHangViewModel>();
+        foreach (var item in sanPhamBans)
+        {
+            var m = _context.SanPhams.Where(x => x.Id == item.SanPhamId).FirstOrDefault();
+            if (m != null)
+            {
+                gioHang.Add(new GioHangViewModel
+                {
+                    Id = item.SanPhamId,
+                    TenSanPham = m.Ten,
+                    ThongTin = m.ThongTin,
+                    SoLuong = item.SoLuong,
+                    DonGia = m.GiaTien,
+                    ThanhTien = item.ThanhTien
+                });
+            }
+        }
+        return View(gioHang);
+    }
+    [HttpGet]
+    public async void EditCart(int id, int soLuong, double donGia)
+    {
+        var ApplicationUserId = await GetCurrentUserIdAsync();
+        var sanPhamBan = _context.SanPhamBans.Where(x => x.SanPhamId == id && x.ApplicationUserId == ApplicationUserId).FirstOrDefault();
+        if (sanPhamBan != null)
+        {
+            if (soLuong == 0)
+            {
+                _context.SanPhamBans.Remove(sanPhamBan);
+            }
+            sanPhamBan.SoLuong = soLuong;
+            sanPhamBan.ThanhTien = donGia * soLuong;
+            _context.SaveChanges();
+        }
+    }
+}

@@ -1,0 +1,375 @@
+using System.Text.RegularExpressions;
+using ElectronicShop.Areas.ViewPageModel.TimKiem;
+using System.Text.Encodings.Web;
+
+namespace ElectronicShop.Controllers;
+
+public class SearchController : Controller
+{
+    private readonly ApplicationDbContext _context;
+    private readonly HtmlEncoder _htmlEncode;
+
+    public SearchController(ApplicationDbContext context,HtmlEncoder htmlEncode)
+    {
+        _context = context;
+        this._htmlEncode = htmlEncode;
+    }
+    [HttpGet]
+    public IActionResult Index()
+    {
+        return TuKhoaTimKiem(String.Empty);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Index(string tuTimKiem)
+    {
+        return TuKhoaTimKiem(tuTimKiem);
+    }
+
+    public IActionResult TuKhoaTimKiem(string tuTimKiem)
+    {
+
+        var data = LayData();
+        var _tuTimKiem = tuTimKiem;
+        //Show all san pham
+        if (String.IsNullOrEmpty(tuTimKiem))
+        {
+            var sanPhamAll = _context.SanPhams;
+            var sanPhamAllViewModel = DataToViewModel(sanPhamAll);
+            return View(sanPhamAllViewModel);
+        }
+        else
+        {
+            Regex pattern = new Regex("[^a-zA-Z0-9]");
+            _tuTimKiem = pattern.Replace(_tuTimKiem, "\n");
+            ViewData["tuTimKiem"] = _tuTimKiem;
+        }
+        //So sanh Cum
+        string[] tuKhoas = TachChuoiDauVao(tuTimKiem);
+        string[] kyTus = PhanRaDauVao(tuTimKiem);
+        List<int> idSanPhams = IdSanPhamKhop(tuKhoas, data);
+
+        //Test
+        if (tuKhoas == null || tuKhoas.Length == 0)
+            ViewData["message"] = "Loi Tach Chuoi";
+        else if (data == null)
+            ViewData["message"] = "Loi Data";
+        else if (idSanPhams == null || idSanPhams.Count == 0)
+        {
+            idSanPhams = IdSanPhamKhop(kyTus, data);
+            ViewData["message"] = idSanPhams;
+        }
+        else
+            ViewData["message"] = idSanPhams;
+
+        //Theo Tu khoa tim kiem
+        IEnumerable<SanPham> sanPhamTimKiem = LocSanPhamTimKiemTheoId(idSanPhams);
+        IEnumerable<ProductViewModel> ProductViewModel = new List<ProductViewModel>();
+        if (sanPhamTimKiem != null)
+        {
+            ProductViewModel = DataToViewModel(sanPhamTimKiem);
+        }
+
+        return View(ProductViewModel);
+    }
+    [HttpGet]
+    public IActionResult SanPhamGiaTangDan()
+    {
+        var sanPhams = LocSanPhamTangDan(true);
+        if (sanPhams != null)
+        {
+            var ProductViewModel = DataToViewModel(sanPhams);
+            return PartialView("_SanPhamTimKiem", ProductViewModel);
+        }
+        else
+            return PartialView("_SanPhamTimKiem", null);
+    }
+    [HttpGet]
+    public IActionResult SanPhamGiaGiamDan()
+    {
+        var sanPhams = LocSanPhamTangDan(false);
+        if (sanPhams != null)
+        {
+            var ProductViewModel = DataToViewModel(sanPhams);
+            return PartialView("_SanPhamTimKiem", ProductViewModel);
+        }
+        else
+            return PartialView("_SanPhamTimKiem", null);
+
+    }
+
+    [HttpPost]
+    public IActionResult BoLocTimKiem([Bind(include: "Loai,ThuongHieu,Min,Max")] BoLocTimKiemModel boLocTimKiem)
+    {
+        var sanPhams = LocSanPhamThuocTinh(boLocTimKiem);
+        if (sanPhams.Count() == 0)
+        {
+            ViewData["messageError"] = "Không tìm thấy sản phẩm";
+        }
+
+        var ProductViewModel = DataToViewModel(sanPhams);
+
+        return View("Index", ProductViewModel);
+    }
+    //Loc san pham theo thuoc tinh
+    private IEnumerable<SanPham> LocSanPhamThuocTinh(BoLocTimKiemModel boLocTimKiem)
+    {
+        var _boLocTimKiem = boLocTimKiem;
+
+        var minIn = _boLocTimKiem.Min;
+        var maxIn = _boLocTimKiem.Max;
+        if (minIn != null && maxIn != null)
+        {
+            minIn = minIn.Replace(",", "");
+            maxIn = maxIn.Replace(",", "");
+        }
+        //Convert tp double
+        double min = Convert.ToDouble(minIn);
+        double max = Convert.ToDouble(maxIn);
+        //List
+        var sanPhams = new List<SanPham>();
+        var sanPhamLoais = new List<SanPham>() { };
+        var sanPhamThuongHieus = new List<SanPham>() { };
+        var sanPhamGiaCas = new List<SanPham>();
+
+        //Loc Theo Loai
+        if (_boLocTimKiem.Loai != null)
+        {
+            foreach (var item in _boLocTimKiem.Loai)
+            {
+                string ten = nameof(_boLocTimKiem.Loai);
+                System.Reflection.PropertyInfo? prop = typeof(SanPham).GetProperty(ten);
+                if (prop != null)
+                {
+                    foreach (var sanPham in _context.SanPhams)
+                    {
+                        if (prop.GetValue(sanPham)!.ToString() == item)
+                            sanPhamLoais.Add(sanPham);
+                    }
+                }
+            }
+        }
+        //Loc theo thuong hieu
+        if (_boLocTimKiem.ThuongHieu != null)
+        {
+            foreach (var item in _boLocTimKiem.ThuongHieu)
+            {
+                string ten = nameof(_boLocTimKiem.ThuongHieu);
+                System.Reflection.PropertyInfo? prop = typeof(SanPham).GetProperty(ten);
+                if (prop != null)
+                {
+                    foreach (var sanPham in _context.SanPhams)
+                    {
+                        if (prop.GetValue(sanPham)!.ToString() == item)
+                        {
+                            sanPhamThuongHieus.Add(sanPham);
+                        }
+                    }
+                }
+            }
+        }
+        //Loc theo gia ca 
+        if (min >= 0 && max >= 0 && max > min)
+        {
+            System.Reflection.PropertyInfo? prop = typeof(SanPham).GetProperty("GiaTien");
+            if (prop != null)
+            {
+                var sanPhamGiaCa = from sanPham in _context.SanPhams
+                                   where sanPham.GiaTien > min && sanPham.GiaTien < max
+                                   select sanPham;
+
+                if (sanPhamGiaCa != null)
+                    sanPhamGiaCas.AddRange(sanPhamGiaCa);
+            }
+        }
+
+        //Giao hop 2 list 
+        if (sanPhamLoais.Count > 0 && sanPhamThuongHieus.Count > 0 && sanPhamGiaCas.Count > 0)
+        {
+            var m = sanPhamLoais.Intersect(sanPhamThuongHieus);
+            m = m.Intersect(sanPhamGiaCas);
+            sanPhams.AddRange(m);
+        }
+        else if (sanPhamLoais.Count == 0 && sanPhamThuongHieus.Count > 0 && sanPhamGiaCas.Count > 0)
+        {
+            var m = sanPhamGiaCas.Intersect(sanPhamThuongHieus);
+            sanPhams.AddRange(m);
+        }
+        else if (sanPhamThuongHieus.Count == 0 && sanPhamLoais.Count > 0 && sanPhamGiaCas.Count > 0)
+        {
+
+            var m = sanPhamLoais.Intersect(sanPhamGiaCas);
+            sanPhams.AddRange(m);
+        }
+        else if (sanPhamGiaCas.Count == 0 && sanPhamLoais.Count > 0 && sanPhamThuongHieus.Count > 0)
+        {
+            var m = sanPhamLoais.Intersect(sanPhamThuongHieus);
+            sanPhams.AddRange(m);
+        }
+        else
+        {
+            sanPhams.AddRange(sanPhamGiaCas);
+            sanPhams.AddRange(sanPhamLoais);
+            sanPhams.AddRange(sanPhamThuongHieus);
+        }
+        return sanPhams;
+    }
+
+
+    private IEnumerable<SanPham> LocSanPhamTangDan(bool tang)
+    {
+        var sanPhamGiaTangs = from sanPham in _context.SanPhams
+                              orderby sanPham.GiaTien ascending
+                              select sanPham;
+        IEnumerable<SanPham> sanPhamGiaGiams = from sanPham in _context.SanPhams
+                                               orderby sanPham.GiaTien descending
+                                               select sanPham;
+        if (tang)
+        {
+            if (sanPhamGiaTangs != null)
+                return sanPhamGiaTangs;
+            else
+                return null!;
+        }
+        else
+        {
+            if (sanPhamGiaGiams != null)
+                return sanPhamGiaGiams;
+            else
+                return null!;
+        }
+
+    }
+    private IEnumerable<SanPham> LocSanPhamTimKiemTheoId(List<int> idSanPhams)
+    {
+        var _idSanPhams = idSanPhams;
+        var sanPhamTimKiem = new List<SanPham>();
+        if (_idSanPhams != null)
+        {
+            foreach (var id in _idSanPhams)
+            {
+                var sanPham = _context.SanPhams.Where(x => x.Id == id).FirstOrDefault();
+                if (sanPham != null)
+                {
+                    sanPhamTimKiem.Add(sanPham);
+                }
+            }
+        }
+        return sanPhamTimKiem;
+    }
+
+    private IEnumerable<ProductViewModel> DataToViewModel(IEnumerable<SanPham> sanPhams)
+    {
+        
+        var sanPhamTimKiem = new List<ProductViewModel>();
+        foreach (var sanPham in sanPhams)
+        {
+            if (sanPham != null)
+            {
+                var laySoSao = ReviewsController.LaySoSaoTongQuat(sanPham.Id,_context);
+                sanPhamTimKiem.Add(new ProductViewModel
+                {
+                    Id = sanPham.Id,
+                    TenSanPham = sanPham.Ten,
+                    Loai = sanPham.Loai,
+                    ThuongHieu = sanPham.ThuongHieu,
+                    ThongTin = sanPham.ThongTin,
+                    ConHang = sanPham.TinhTrang,
+                    DonGia = sanPham.GiaTien,
+                    SoSaoTrungBinh = laySoSao.SoSaoTrungBinh,
+                    SoLuot = laySoSao.SoLuot
+                });
+            }
+        }
+        return sanPhamTimKiem;
+    }
+
+    private List<int> IdSanPhamKhop(string[] chuoiDauVao, IDictionary<string, IDictionary<string, int>> data)
+    {
+        var _data = data;
+        var _input = chuoiDauVao;
+        List<int> ketQua = new List<int> { };
+        var tens = _data["tenSanPham"];
+        //Tim kiem trong Ten
+        if (_input != null && tens != null)
+        {
+            foreach (KeyValuePair<string, int> item in tens)
+            {
+                int soLanTrungKhop = 0;
+                //Tra cuu theo cum 
+                foreach (var str in _input)
+                {
+                    if (str.Length == 1)
+                    {
+
+                        if ((item.Key).Contains(str))
+                        {
+                            soLanTrungKhop++;
+                        }
+                    }
+                    else if ((item.Key).Contains(str))
+                    {
+                        ketQua.Add(item.Value);
+                        break;
+                    }
+                }
+                if (soLanTrungKhop > 2)
+                {
+                    ketQua.Add(item.Value);
+                }
+            }
+        }
+        return ketQua;
+    }
+    //Quy het dinh dang le lower de so sanh
+    private string[] TachChuoiDauVao(string input)
+    {
+        //Chia Nho chuoi duoc phan cach bang space va chuyen het ve lower
+        var _input = input.ToLower();
+        _input = _input.Trim();
+        var chuoiDaTach = new string[] { };
+        if (_input != null)
+        {
+            chuoiDaTach = _input.Split(" ");
+        }
+        return chuoiDaTach;
+    }
+    private string[] PhanRaDauVao(string input)
+    {
+        var kyTus = new char[] { };
+        var _input = input.ToLower().Trim();
+        IEnumerable<char> x = _input.TakeWhile(x => x != ' ');
+        kyTus = x.ToArray();
+        var kyTusTring = kyTus.Select(c => c.ToString()).ToArray();
+        return kyTusTring;
+    }
+
+    private IDictionary<string, IDictionary<string, int>> LayData()
+    {
+        var sanPhams = _context.SanPhams.ToArray();
+        IDictionary<string, int> tenSanPhams = new Dictionary<string, int>();
+        IDictionary<string, int> thongTinSanPhams = new Dictionary<string, int>();
+        IDictionary<string, IDictionary<string, int>>? thongTin = new Dictionary<string, IDictionary<string, int>>();
+        if (sanPhams == null)
+            thongTin = null;
+        else
+        {
+            foreach (var item in sanPhams)
+            {
+                var tenSanPham = item.Ten;
+                if (tenSanPham != null)
+                    tenSanPhams.Add(tenSanPham.ToLower(), item.Id);
+                var thongTinSanPham = item.ThongTin;
+                if (thongTinSanPham != null)
+                    thongTinSanPhams.Add(thongTinSanPham.ToLower(), item.Id);
+
+            }
+            if (tenSanPhams.Count > 0 && thongTinSanPhams.Count > 0)
+            {
+                thongTin.Add("tenSanPham", tenSanPhams);
+                thongTin.Add("ThongTin", thongTinSanPhams);
+            }
+        }
+        return thongTin!;
+    }
+}
