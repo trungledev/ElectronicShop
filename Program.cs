@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -19,13 +19,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-builder.Services.AddAuthentication()
-    .AddFacebook(facebookOptions =>
-    {
-        facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
-        facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-        facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
-    });
+#warning "Nen luu app id in appsetings.json"
+// builder.Services.AddAuthentication()
+//     .AddFacebook(facebookOptions =>
+//     {
+//         facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
+//         facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+//         facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
+//     });
 builder.Services.AddAuthorization(option =>
 {
     option.AddPolicy("RoleAdmin", policy => policy.RequireClaim("Admin"));
