@@ -3,6 +3,7 @@ using System;
 using ElectronicShop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,12 +11,28 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElectronicShop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221026090339_First-migration")]
+    partial class Firstmigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.7");
+
+            modelBuilder.Entity("ApplicationUserProduct", b =>
+                {
+                    b.Property<int>("ProductsProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ProductsProductId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ApplicationUserProduct");
+                });
 
             modelBuilder.Entity("ElectronicShop.Data.Address", b =>
                 {
@@ -30,13 +47,6 @@ namespace ElectronicShop.Migrations
                     b.Property<string>("City")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ProducerId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ProducerProductId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Province")
                         .HasColumnType("TEXT");
 
@@ -44,10 +54,6 @@ namespace ElectronicShop.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("AddressId");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ProducerProductId");
 
                     b.ToTable("Addresses");
                 });
@@ -68,30 +74,16 @@ namespace ElectronicShop.Migrations
 
                     b.HasKey("UserId", "ProductId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("ElectronicShop.Data.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("ElectronicShop.Data.ProducerProduct", b =>
+            modelBuilder.Entity("ElectronicShop.Data.Producer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,14 +91,6 @@ namespace ElectronicShop.Migrations
 
                     b.Property<int>("AddressId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
@@ -122,11 +106,8 @@ namespace ElectronicShop.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("CartId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Information")
                         .IsRequired()
@@ -142,19 +123,22 @@ namespace ElectronicShop.Migrations
                     b.Property<int>("ProducerId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("ReviewId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ProductId");
+                    b.Property<int>("TypeId")
+                        .HasColumnType("INTEGER");
 
-                    b.HasIndex("CategoryId");
+                    b.HasKey("ProductId");
 
                     b.HasIndex("ProducerId");
 
                     b.HasIndex("StatusId");
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Products");
                 });
@@ -184,15 +168,11 @@ namespace ElectronicShop.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("ElectronicShop.Data.StatusProduct", b =>
+            modelBuilder.Entity("ElectronicShop.Data.Status", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
@@ -200,6 +180,20 @@ namespace ElectronicShop.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Statuses");
+                });
+
+            modelBuilder.Entity("ElectronicShop.Data.Type", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Types");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -407,43 +401,48 @@ namespace ElectronicShop.Migrations
                     b.Property<int>("AddressId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("CartId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasIndex("AddressId")
+                        .IsUnique();
+
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
-            modelBuilder.Entity("ElectronicShop.Data.Address", b =>
+            modelBuilder.Entity("ApplicationUserProduct", b =>
                 {
-                    b.HasOne("ElectronicShop.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany("Address")
-                        .HasForeignKey("ApplicationUserId")
+                    b.HasOne("ElectronicShop.Data.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ElectronicShop.Data.ProducerProduct", "ProducerProduct")
-                        .WithMany("Address")
-                        .HasForeignKey("ProducerProductId")
+                    b.HasOne("ElectronicShop.Data.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("ProducerProduct");
                 });
 
             modelBuilder.Entity("ElectronicShop.Data.Cart", b =>
                 {
                     b.HasOne("ElectronicShop.Data.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                        .WithOne("Cart")
+                        .HasForeignKey("ElectronicShop.Data.Cart", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ElectronicShop.Data.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("Cart")
+                        .HasForeignKey("ElectronicShop.Data.Cart", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -454,41 +453,41 @@ namespace ElectronicShop.Migrations
 
             modelBuilder.Entity("ElectronicShop.Data.Product", b =>
                 {
-                    b.HasOne("ElectronicShop.Data.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ElectronicShop.Data.ProducerProduct", "Producer")
+                    b.HasOne("ElectronicShop.Data.Producer", "Producer")
                         .WithMany("Products")
                         .HasForeignKey("ProducerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ElectronicShop.Data.StatusProduct", "Status")
+                    b.HasOne("ElectronicShop.Data.Status", "Status")
                         .WithMany("Products")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.HasOne("ElectronicShop.Data.Type", "Type")
+                        .WithMany("Products")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Producer");
 
                     b.Navigation("Status");
+
+                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("ElectronicShop.Data.Review", b =>
                 {
                     b.HasOne("ElectronicShop.Data.Product", "Product")
-                        .WithMany()
+                        .WithMany("Reviews")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ElectronicShop.Data.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Reviews")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -549,26 +548,52 @@ namespace ElectronicShop.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ElectronicShop.Data.Category", b =>
+            modelBuilder.Entity("ElectronicShop.Data.ApplicationUser", b =>
                 {
-                    b.Navigation("Products");
-                });
+                    b.HasOne("ElectronicShop.Data.Address", "Address")
+                        .WithOne("ApplicationUser")
+                        .HasForeignKey("ElectronicShop.Data.ApplicationUser", "AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("ElectronicShop.Data.ProducerProduct", b =>
-                {
                     b.Navigation("Address");
+                });
 
+            modelBuilder.Entity("ElectronicShop.Data.Address", b =>
+                {
+                    b.Navigation("ApplicationUser")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ElectronicShop.Data.Producer", b =>
+                {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("ElectronicShop.Data.StatusProduct", b =>
+            modelBuilder.Entity("ElectronicShop.Data.Product", b =>
+                {
+                    b.Navigation("Cart")
+                        .IsRequired();
+
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("ElectronicShop.Data.Status", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ElectronicShop.Data.Type", b =>
                 {
                     b.Navigation("Products");
                 });
 
             modelBuilder.Entity("ElectronicShop.Data.ApplicationUser", b =>
                 {
-                    b.Navigation("Address");
+                    b.Navigation("Cart")
+                        .IsRequired();
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
