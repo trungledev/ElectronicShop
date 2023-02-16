@@ -19,14 +19,16 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-#warning "Nen luu app id in appsetings.json"
-// builder.Services.AddAuthentication()
-//     .AddFacebook(facebookOptions =>
-//     {
-//         facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
-//         facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-//         facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
-//     });
+builder.Services.AddAuthentication()
+    .AddFacebook(facebookOptions =>
+    {
+        //Đọc thông tin Authentication:Facebook từ appsettings.json
+        IConfiguration facebookAuthNSection = builder.Configuration.GetSection("Authentication:Facebook");
+
+        facebookOptions.AppId = facebookAuthNSection["ClientId"];
+        facebookOptions.AppSecret = facebookAuthNSection["ClientSecret"];
+        facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
+    });
 builder.Services.AddAuthorization(option =>
 {
     option.AddPolicy("RoleAdmin", policy => policy.RequireClaim("Admin"));
