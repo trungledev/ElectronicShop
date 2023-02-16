@@ -28,7 +28,18 @@ builder.Services.AddAuthentication()
         facebookOptions.AppId = facebookAuthNSection["ClientId"];
         facebookOptions.AppSecret = facebookAuthNSection["ClientSecret"];
         facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
-    });
+    })
+    .AddGoogle(googleOptions =>
+    {
+        // Đọc thông tin từ appsettings.json
+        IConfiguration googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
+
+        googleOptions.ClientId = googleAuthNSection["ClientId"];
+        googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+    })
+    
+    ;
+    
 builder.Services.AddAuthorization(option =>
 {
     option.AddPolicy("RoleAdmin", policy => policy.RequireClaim("Admin"));
