@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="3.5.0" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="6.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.9" />
@@ -29,12 +30,13 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.7" />
+    <PackageReference Include="MimeKit" Version="3.5.0" />
   </ItemGroup>
 
   <!-- Package for Xunit -->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3"/>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
   </ItemGroup>
 </Project>
