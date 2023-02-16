@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ElectronicShop.Data;
+using ElectronicShop.Mail;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(options =>{
+    //options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+});
+
+//Đăng ký dịch vụ mail
+var mailSettings = builder.Configuration.GetSection("MailSettings");
+builder.Services.Configure<MailSettings>(mailSettings);
+builder.Services.AddTransient<IEmailSender,SendMailService>();
+
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication()
@@ -36,9 +49,8 @@ builder.Services.AddAuthentication()
 
         googleOptions.ClientId = googleAuthNSection["ClientId"];
         googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-    })
-    
-    ;
+    });
+
     
 builder.Services.AddAuthorization(option =>
 {
