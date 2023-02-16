@@ -15,13 +15,14 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedAccount = true;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>{
-    //options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 });
 
