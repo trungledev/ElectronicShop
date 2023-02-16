@@ -92,20 +92,27 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
         //Duoc goi thong qua page cua ExternalLogin.cshtml
         public IActionResult OnGet() => RedirectToPage("./Login");
         //submit tai 2 trang dang nhap va dang ky => chuyen den trang xac thuc tu provider(fb, google)
-        public IActionResult OnPost(string provider, string returnUrl = null)
+        public async Task<IActionResult> OnPost(string provider, string returnUrl = null)
         {
             // Kiểm tra yêu cầu dịch vụ provider tồn tại
-
-
-
-
-
+            var listProvider = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            var providerProcess = listProvider.Find(x => x.Name == provider);
+            if (providerProcess == null)
+            {
+                return NotFound("Dịch vụ không chính xác: " + provider);
+            }
 
             // Request a redirect to the external login provider.
+            // redirectUrl - là Url sẽ chuyển hướng đến - sau khi CallbackPath (/dang-nhap-tu-google) thi hành xong
+            // nó bằng identity/account/externallogin?handler=Callback
+            // tức là gọi OnGetCallbackAsync
             var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            // Cấu hình
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            //Chuyển đến dịch vụ ngoài(Google, Facebook)
             return new ChallengeResult(provider, properties);
         }
+
         //Duoc goi khi da ket thuc trang xac thuc tu provider
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
@@ -123,6 +130,8 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
             //Đã có  user tồn tại trong database và đã tạo liên kết
+            // User nào có 2 thông tin này sẽ được đăng nhập - thông tin này lưu tại bảng UserLogins của Database
+            // Trường LoginProvider và ProviderKey ---> tương ứng UserId 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
@@ -138,11 +147,13 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             }
             else
             {
-
-                // Đã có Acount, đã liên kết với tài khoản ngoài - nhưng không đăng nhập được
-                // có thể do chưa kích hoạt email => chuyển hướng sang page RegisterConfirm
-
-
+                var userExisted = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                if (userExisted != null)
+                {
+                    // Đã có Acount, đã liên kết với tài khoản ngoài - nhưng không đăng nhập được
+                    // có thể do chưa kích hoạt email => chuyển hướng sang page RegisterConfirm
+                    return RedirectToPage("./RegisterConfirmation", new { Email = userExisted.Email });
+                }
                 // Chưa có Account liên kết với tài khoản ngoài
                 // Hiện thị form để thực hiện bước tiếp theo ở OnPostConfirmationAsync
                 // If the user does not have an account, then ask the user to create an account.
@@ -189,19 +200,20 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                 }
                 //Kiểm tra có tồn tại user có externalEmail ?
                 var userExternal = (externalEmail != null) ? (await _userManager.FindByEmailAsync(externalEmail)) : null;
-                if(userExternal != null)
+                if (userExternal != null)
                 {
-                    
-                     if (!userExternal.EmailConfirmed) {
-                        var codeActive = await _userManager.GenerateEmailConfirmationTokenAsync (userExternal);
-                        await _userManager.ConfirmEmailAsync (userExternal, codeActive);
+
+                    if (!userExternal.EmailConfirmed)
+                    {
+                        var codeActive = await _userManager.GenerateEmailConfirmationTokenAsync(userExternal);
+                        await _userManager.ConfirmEmailAsync(userExternal, codeActive);
                     }
                     //Có user có externalEmail => tạo liên kết
-                    var resultAdd = await _userManager.AddLoginAsync(userExternal,info);
-                    if(resultAdd.Succeeded)
+                    var resultAdd = await _userManager.AddLoginAsync(userExternal, info);
+                    if (resultAdd.Succeeded)
                     {
                         //Tạo liên kết thành công => đăng nhập
-                        await _signInManager.SignInAsync(userExternal,isPersistent:false,info.LoginProvider);
+                        await _signInManager.SignInAsync(userExternal, isPersistent: false, info.LoginProvider);
                         return LocalRedirect(returnUrl);
 
                     }
