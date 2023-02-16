@@ -86,7 +86,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             public string Email { get; set; }
             [Required]
             [Display(Name = "Họ và tên")]
-            public string HoVaTen { get; set; }
+            public string FullName { get; set; }
 
         }
         //Duoc goi thong qua page cua ExternalLogin.cshtml
@@ -164,7 +164,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                     Input = new InputModel
                     {
                         Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                        HoVaTen = info.Principal.FindFirstValue(ClaimTypes.Name)
+                        FullName = info.Principal.FindFirstValue(ClaimTypes.Name)
                     };
                 }
                 return Page();
@@ -224,7 +224,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                user.FullName = Input.HoVaTen;
+                user.FullName = Input.FullName;
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
