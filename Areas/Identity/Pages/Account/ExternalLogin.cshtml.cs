@@ -84,9 +84,6 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
-            [Required]
-            [Display(Name = "Họ và tên")]
-            public string FullName { get; set; }
 
         }
         //Duoc goi thong qua page cua ExternalLogin.cshtml
@@ -154,6 +151,14 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                     // có thể do chưa kích hoạt email => chuyển hướng sang page RegisterConfirm
                     return RedirectToPage("./RegisterConfirmation", new { Email = userExisted.Email });
                 }
+                //Kiểm tra đã tồn tại account chứa email với tài khoản ngoài chưa
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                var existEmail = _userManager.FindByEmailAsync(email);
+                if (existEmail != null)
+                {
+                    //Xác định phương án cho trường hợp đã tồn tại account chứa email từ dv ngoài
+                    ViewData["StatusAccount"] ="Đã có tài khoản được tạo bạn có muốn liên kết với toàn khoản "+ email + ". Muốn liên kết hãy nhấn nút Register nếu không hãy quay lại.";
+                }
                 // Chưa có Account liên kết với tài khoản ngoài
                 // Hiện thị form để thực hiện bước tiếp theo ở OnPostConfirmationAsync
                 // If the user does not have an account, then ask the user to create an account.
@@ -164,7 +169,6 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                     Input = new InputModel
                     {
                         Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                        FullName = info.Principal.FindFirstValue(ClaimTypes.Name)
                     };
                 }
                 return Page();
@@ -224,7 +228,6 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                user.FullName = Input.FullName;
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -252,7 +255,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                         // If account confirmation is required, we need to show the link if we don't have a real email sender
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)
                         {
-                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
+                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email});
                         }
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
