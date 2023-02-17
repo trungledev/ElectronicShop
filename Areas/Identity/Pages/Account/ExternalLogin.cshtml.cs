@@ -52,6 +52,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
+        public bool IsExistEmail { get; set; } = false;
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -84,7 +85,9 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
-
+            [Required]
+            [Display(Name = "Họ và tên")]
+            public string FullName { get; set; }
         }
         //Duoc goi thong qua page cua ExternalLogin.cshtml
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -153,24 +156,37 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                 }
                 //Kiểm tra đã tồn tại account chứa email với tài khoản ngoài chưa
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                var existEmail = _userManager.FindByEmailAsync(email);
+                var existEmail = await _userManager.FindByEmailAsync(email);
                 if (existEmail != null)
                 {
                     //Xác định phương án cho trường hợp đã tồn tại account chứa email từ dv ngoài
-                    ViewData["StatusAccount"] ="Đã có tài khoản được tạo bạn có muốn liên kết với toàn khoản "+ email + ". Muốn liên kết hãy nhấn nút Register nếu không hãy quay lại.";
+                    ViewData["StatusAccount"] = "Đã có tài khoản được tạo bạn có muốn liên kết với toàn khoản " + existEmail.Email + ". Muốn liên kết hãy nhấn nút Register nếu không hãy quay lại.";
+                    IsExistEmail = true;
+                    Input = new InputModel
+                    {
+                        Email = existEmail.Email,
+                        FullName = existEmail.FullName
+                    };
+
+                }
+                else
+                {
+
+                    if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+                    {
+                        Input = new InputModel
+                        {
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            FullName = info.Principal.FindFirstValue(ClaimTypes.Name)
+                        };
+                    }
                 }
                 // Chưa có Account liên kết với tài khoản ngoài
                 // Hiện thị form để thực hiện bước tiếp theo ở OnPostConfirmationAsync
                 // If the user does not have an account, then ask the user to create an account.
                 ReturnUrl = returnUrl;
                 ProviderDisplayName = info.ProviderDisplayName;
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
-                {
-                    Input = new InputModel
-                    {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                    };
-                }
+
                 return Page();
             }
         }
@@ -228,7 +244,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-
+                user.FullName = Input.FullName;
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -255,7 +271,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                         // If account confirmation is required, we need to show the link if we don't have a real email sender
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)
                         {
-                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email});
+                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
                         }
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
