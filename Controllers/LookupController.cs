@@ -1,5 +1,5 @@
 namespace ElectronicShop.Controllers;
-[Authorize(Roles ="Admin")]
+// [Authorize(Roles ="Admin")]
 public abstract class LookupController<TModel> : CRUDGeneric<TModel, LookupViewModel, int>
     where TModel : class
 {

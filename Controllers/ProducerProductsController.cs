@@ -48,7 +48,7 @@ public class ProducerProductsController : CRUDGeneric<ProducerProduct, ProducerV
     {
         if (model == null)
         {
-            //Not model in parameter for methdo Create() 
+            //Not model in parameter for method Create() 
             // Data property default or empty or null
             return new ProducerViewModel();
         }

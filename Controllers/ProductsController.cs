@@ -8,7 +8,7 @@ namespace ElectronicShop.Controllers;
     Sumary: 
        
 */
-[Authorize(Roles ="Admin")]
+// [Authorize(Roles ="Admin")]
 public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
 {
     private ElectronicShop.Models.MessageViewModel _errorModel;

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace ElectronicShop.Areas.Admin.Pages;
 
 
-[Authorize(Roles ="Admin")]
+// [Authorize(Roles ="Admin")]
 public class AdminIndexModel : PageModel
 {
     [BindProperty]
