@@ -59,18 +59,22 @@ namespace ElectronicShop.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            [Required]
+            [Display(Name = "Họ và tên")]
+            public string FullName { get; set; }   
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
+            var fullName = user.FullName;
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FullName = fullName
             };
         }
 
@@ -110,6 +114,8 @@ namespace ElectronicShop.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+            user.FullName = Input.FullName;
+            await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
