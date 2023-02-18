@@ -4,7 +4,7 @@ namespace ElectronicShop.Models;
 
 public class ProductViewModel
 {
-    public int ProductId { get; set; }
+    public int Id { get; set; }
 
     [Display(Name = "Tên")]
     [Required(ErrorMessage = "Can them data")]

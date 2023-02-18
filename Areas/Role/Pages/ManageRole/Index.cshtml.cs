@@ -9,7 +9,7 @@ namespace ElectronicShop.Areas.Role.Pages.ManageRole;
     Edit
     Delete
 */
-[Authorize(Roles ="Developer")]
+ [Authorize(Roles ="Guest")]
 public class IndexRoleModel : PageModel
 {
     private readonly RoleManager<IdentityRole> _roleManager;

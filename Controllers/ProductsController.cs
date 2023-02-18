@@ -8,7 +8,7 @@ namespace ElectronicShop.Controllers;
     Sumary: 
        
 */
-// [Authorize(Roles ="Admin")]
+[Authorize(Roles ="Guest")]
 public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
 {
     private ElectronicShop.Models.MessageViewModel _errorModel;
@@ -27,7 +27,7 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         {
             Product product = new Product()
             {
-                ProductId = viewModel.ProductId,
+                ProductId = viewModel.Id,
                 Name = viewModel.NameProduct!,
                 Information = viewModel.Information!,
                 Price = viewModel.Price,
@@ -50,7 +50,7 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         ProductViewModel viewModel = new ProductViewModel();
         if (model != null)
         {
-            viewModel.ProductId = model.ProductId;
+            viewModel.Id = model.ProductId;
             viewModel.NameProduct = model.Name;
             viewModel.Information = model.Information;
             viewModel.Price = model.Price;
@@ -128,7 +128,7 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         {
             viewData.Add(new ProductViewModel()
             {
-                ProductId = product.ProductId,
+                Id = product.ProductId,
                 NameProduct = product.Name,
                 Information = product.Information,
                 Price = product.Price,

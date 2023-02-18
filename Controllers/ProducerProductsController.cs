@@ -25,7 +25,7 @@ public class ProducerProductsController : CRUDGeneric<ProducerProduct, ProducerV
         {
             Id = viewModel.Id,
             Name = viewModel.Name,
-            AddressId = GetAddressId(viewModel.Address),
+            // AddressId = GetAddressId(viewModel.Address),
             PhoneNumber = viewModel.PhoneNumber,
         };
     }
@@ -35,7 +35,7 @@ public class ProducerProductsController : CRUDGeneric<ProducerProduct, ProducerV
         var model = _context.Producers.Where(x => x.Name == addressStr).FirstOrDefault();
         if (model != null)
         {
-            return model.Id;
+            return model.AddressId;
         }
         else
         {
@@ -58,7 +58,7 @@ public class ProducerProductsController : CRUDGeneric<ProducerProduct, ProducerV
             {
                 Id = model.Id,
                 Name = model.Name,
-                Address = GetNameAddress(model.AddressId),
+                // Address = GetNameAddress(model.AddressId),
                 PhoneNumber = model.PhoneNumber
             };
         }

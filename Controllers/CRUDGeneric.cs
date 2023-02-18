@@ -95,7 +95,8 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
         {
             _table.Add(model);
             _context.SaveChanges();
-            message = BuildMessageModel(true,"Da them" + GetControllerName());
+            message = BuildMessageModel(true, "Da them " + GetControllerName());
+            message.ReturnUrl = "/" + GetControllerName() + "/Index";
             return PartialView(pathViewMessage, message);
         }
         else

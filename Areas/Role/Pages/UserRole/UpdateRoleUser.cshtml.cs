@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
-
 namespace ElectronicShop.Areas.Role.Pages.UserRole;
 
 public class UpdateRoleUserModel : PageModel
@@ -53,7 +50,7 @@ public class UpdateRoleUserModel : PageModel
     {
         //them roleInput va xoa di nhung role con lai
         var rolesNameAll = _roleManager.Roles.Select(x => x.Name).ToList();
-        var roleNameInputs = Input.RoleNames;
+        var roleNameInputs = Input!.RoleNames;
         var rolesNameAbout = rolesNameAll.Except(roleNameInputs);
         var IdApplicationUser = Input.UserId;
         var roles = new List<IdentityRole>();

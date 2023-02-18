@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
-
 namespace ElectronicShop.Areas.Role.Pages.UserRole;
 
-[Authorize(Roles ="Developer")]
+ [Authorize(Roles ="Guest")]
 public class IndexUserRoleModel : PageModel
 {
     private readonly ApplicationDbContext _context;
@@ -11,7 +9,7 @@ public class IndexUserRoleModel : PageModel
 
     public class InputModel
     {
-        [EmailAddress(ErrorMessage = "Loi dinh dang")]
+        [EmailAddress(ErrorMessage = "Lỗi định dạng")]
         public string? Email { get; set; }
     }
     public class UserRoleModel
@@ -19,8 +17,9 @@ public class IndexUserRoleModel : PageModel
         public string? UserId { get; set; }
         [EmailAddress]
         public string? Email { get; set; }
-        [Display(Name = "Ho Va Ten")]
-        public string? HoVaTen { get; set; }
+        [Display(Name = "Họ và tên")]
+        public string? FullName { get; set; }
+        [Display(Name = "Vai trò")]
         public List<string>? Roles { get; set; }
     }
 
@@ -58,7 +57,6 @@ public class IndexUserRoleModel : PageModel
         if (ModelState.IsValid)
         {
             var emailInput = Input?.Email;
-            Console.WriteLine("Email:" + emailInput);
             if (emailInput != null)
             {
                 //Tim nguoi dung co email trong tim kiem
@@ -76,11 +74,11 @@ public class IndexUserRoleModel : PageModel
                 await this.OnGet();
             }
         }
-        else
-        {
-            ModelState.AddModelError("", "loi me may");
-            return Page();
-        }
+        // else
+        // {
+        //     ModelState.AddModelError("", "loi me may");
+        //     return Page();
+        // }
         return Page();
     }
     private async Task<List<UserRoleModel>> AddUserRoleModelAsync(ApplicationUser user)
@@ -91,7 +89,7 @@ public class IndexUserRoleModel : PageModel
         {
             UserId = user.Id,
             Email = user.Email,
-            HoVaTen = user.FullName,
+            FullName = user.FullName,
             Roles = roles
         });
         return _userRoleModels;

@@ -29,13 +29,15 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -43,6 +45,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -248,6 +251,11 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    //Set role default for user
+                    string nameRoleDefault = "Guest";
+                    var roleAdd = new IdentityRole(nameRoleDefault);
+                    await _roleManager.CreateAsync(roleAdd);
+                    await _userManager.AddToRoleAsync(user, nameRoleDefault);
                     //Tạo liên kết với _userManager.AddLoginAsync(user, info);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)

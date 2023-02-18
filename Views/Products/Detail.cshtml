@@ -17,7 +17,7 @@
                     Còn: @Html.DisplayFor(model => model.Quantity) (sp)</p>
                 <div>
                     
-                    <form id="themVaoGioHang" asp-controller="SanPhams" asp-action="ThemVaoGioHang" asp-route-id="@Model.ProductId" >
+                    <form id="themVaoGioHang" asp-controller="SanPhams" asp-action="ThemVaoGioHang" asp-route-id="@Model.Id" >
                         <button class="btn btn-outline-secondary py-0 giam">-</button>
                         <input type="number" value="1" max="99" min="1" name="soLuong"
                             style="width: 50px;">
@@ -52,7 +52,7 @@
                 <div class="collapse" id="taoReview">
                     <div class="card card-body">
                         
-                        <form id="postReview" asp-controller="SanPhams" asp-action="ThemReview" asp-route-id="@Model.ProductId"  enctype="application/x-www-form-urlencoded"  > 
+                        <form id="postReview" asp-controller="SanPhams" asp-action="ThemReview" asp-route-id="@Model.Id"  enctype="application/x-www-form-urlencoded"  > 
                             <div class="mb-3">
                                 <label for="sao"> Đánh giá: </label>
                                 <input id="sao" type="hidden" class="rating" min="1" name="SoSao" />
@@ -104,7 +104,7 @@
     GetReviews();
     $(document).ready(function () {  
         $("button#btnCollapseTao").click(function(){
-            var idSanPham = @Model.ProductId;
+            var idSanPham = @Model.Id;
             $.get("/Reviews/DaReview?idSanPham=" + idSanPham,function(data){
                 $(".toast-body").html(data);
             } );
@@ -121,7 +121,7 @@
             formData.append("TieuDe",tieuDe);
             formData.append("NoiDung",noiDung);
            
-            var idSanPham = @Model.ProductId;
+            var idSanPham = @Model.Id;
 
             $.ajax ({
             type: "POST",
@@ -147,11 +147,12 @@
         });
         //Thong Bao loi them vao gio hang
         $("button#toastBtnThemVaoGioHang").click(function(){
-            var idSanPham = @Model.ProductId;
+            var idSanPham = @Model.Id;
             var valInput = $(this).parent().siblings("input").val();
-            var formData= "id=" + idSanPham + "&soLuong=" + valInput;
-            $.post("/SanPhams/ThemVaoGioHang?" + encodeURI(formData),function(data){
+            var formData= "id=" + idSanPham + "&quantity=" + valInput;
+            $.post("/Cart/AddToCart?" + encodeURI(formData),function(data){
                 $(".toast-body").html(data);
+                ShowToast();
             });
         });
         $(document).click(function(){
@@ -187,7 +188,7 @@
     };
     function GetReviews()
     {
-        var idSanPham = @Model.ProductId;
+        var idSanPham = @Model.Id;
         $.ajax({
             type: "GET",
             url:"/Reviews/GetReviewViewModel",
