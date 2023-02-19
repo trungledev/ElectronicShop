@@ -71,7 +71,7 @@ public class CartController : Controller
         }
     }
     [HttpGet]
-    public async void EditCart(int id, int quantity, double price)
+    public async Task UpdateCart(int id, int quantity, double price)
     {
         var userId = await GetCurrentUserIdAsync();
         var product = _context.Carts.Where(x => x.ProductId == id && x.UserId == userId).FirstOrDefault();
@@ -83,7 +83,7 @@ public class CartController : Controller
             }
             product.Quantity = quantity;
             product.Total = price * quantity;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 

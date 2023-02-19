@@ -8,7 +8,7 @@ namespace ElectronicShop.Controllers;
     Sumary: 
        
 */
-[Authorize(Roles ="Guest")]
+[Authorize(Roles = "Guest")]
 public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
 {
     private ElectronicShop.Models.MessageViewModel _errorModel;
@@ -32,7 +32,7 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
                 Information = viewModel.Information!,
                 Price = viewModel.Price,
                 Quantity = viewModel.Quantity,
-                
+
                 CategoryId = viewModel.CategoryId,
                 ProducerId = viewModel.ProducerId,
                 StatusId = viewModel.StatusId
@@ -149,25 +149,38 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         }
         return viewData;
     }
+    [AllowAnonymous]
     [HttpGet]
-    public IActionResult ShowProductByType(string valueOfProperty, int numberic)
+    public IActionResult ShowProductsByCategory(int quantity)
     {
-        var type = _context.Categories.Where(x => x.Name == valueOfProperty).FirstOrDefault();
-        int id = 0;
-        if(type == null)
-        {
-            return NotFound();
-        }
-        else
-        {
-            id = type.Id;
-        }
-        var products = _context.Products.Where(x => x.CategoryId == id).ToList();
+        string? viewPathShowProduct = _viewPath + "ShowProducts.cshtml";
 
-        IEnumerable<ProductViewModel> viewData = BuildListViewModel(products).Take(numberic);
-        string? viewPathShowProduct = _viewPath + "/ShowProduct";
+        var Categories = _context.Categories.ToList();
+        List<string> CategoriesNames = new List<string>();
+        List<Product> products  = new List<Product>();
+        foreach (var Category in Categories)
+        {
+            CategoriesNames.Add(Category.Name);
+            products.AddRange (_context.Products.Where(p => p.CategoryId == Category.Id).ToList().Take(quantity));
+        }
+        ViewData["CategoriesNames"] = CategoriesNames;
+     
+        IEnumerable<ProductViewModel> viewData = BuildListViewModel(products);
 
-        return PartialView(viewPathShowProduct,viewData);
+        return PartialView(viewPathShowProduct, viewData);
     }
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult Category(string categoryName)
+    {
+        ViewData["Title"] = categoryName;
+        ViewData["PathImage"] = "/images/" + categoryName + ".png";
+        var categoryFound = _context.Categories.Where(c => c.Name == categoryName).FirstOrDefault();
+        if(categoryFound == null)
+            return NotFound();
+        var products = _context.Products.Where(p => p.CategoryId == categoryFound.Id).ToList();
+        var productsViewModel = BuildListViewModel(products);
+        return View(productsViewModel);
 
+    }
 }

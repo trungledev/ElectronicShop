@@ -1,5 +1,6 @@
-﻿  @{
-  ViewData["Title"] = "Trang Chủ";
+﻿@{
+ViewData["Title"] = "Trang Chủ";
+var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
   }
 
   @* Su Kien *@
@@ -54,34 +55,27 @@
         Danh mục sản phẩm
       </h2>
       <div class="list-group list-group-horizontal justify-content-around">
-        <a class="list-group-item" href="#tiviProduct">
-          <img src="images/Tivi.png" class="img-fluid " alt="">
+        @foreach (var categoryName in categoriesNames)
+        {
+          var pathImage = "images/" + categoryName + ".png";
+        <a class="list-group-item" asp-controller="Products" asp-action="Category" asp-route-categoryName ="@categoryName">
+          <img src="@pathImage" class="img-fluid " alt="">
           <div class="text-center">
             <em class="bi bi-tv"></em>
-            <span class="fw-bold">Tivi</span>
+            <span class="fw-bold">@categoryName</span>
           </div>
+        </a>
 
-        </a>
-        <a class="list-group-item" href="#amplyProduct">
-          <img src="images/Amply.png" class="img-fluid " alt="">
-          <div class="text-center">
-            <em class="bi bi-music-player"></em>
-            <span class="fw-bold">Amply</span>
-          </div>
-        </a>
-        <a class="list-group-item" href="#loaProduct">
-          <img src="images/Loa.png" class="img-fluid " alt="">
-          <div class="text-center">
-            <em class="bi bi-speaker"></em>
-            <span class="fw-bold">Loa</span>
-          </div>
-        </a>
+        }
       </div>
     </div>
   </section>
   @* Area display of Product show all Type have (Tivi, Amply, Speaker,...) *@
   <section id="showProduct">
-    
+    <div class="container-xl">
+      <div id="showProduct" >
+      </div>
+    </div>
   </section>
 
   <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>
@@ -92,7 +86,9 @@
     });
 
     $(document).ready(function () {
-      $("select#showProduct").load();
+      var showProduct = $("div#showProduct");
+      var categoryName = showProduct.attr("data-categoryName");
+      $("div#showProduct").load("/Products/ShowProductsByCategory/?quantity=5");
     });
 
   </script>

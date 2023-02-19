@@ -1,4 +1,7 @@
 @model IEnumerable<ElectronicShop.Models.CartViewModel>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
     <section id="SanPhamMua">
         <div class="container-xl">
             <div class="row justify-content-around">
@@ -179,7 +182,7 @@
                     input.parent().parent().remove();
                 }
                 var donGia = parseInt(_input.attr("data-donGia"));
-                $.get("/GioHang/ChinhSuaGioHang?id=" + id + "&soLuong=" + soLuong + "&donGia=" + donGia, function () {
+                $.get("/Cart/UpdateCart?id=" + id + "&quantity=" + soLuong + "&price=" + donGia, function () {
                 });
             }
 

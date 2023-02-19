@@ -1,37 +1,45 @@
 @model IEnumerable<ElectronicShop.Models.ProductViewModel>
-@{
-    
-}
-<div class="container-xl my-5">
-    <div class="text-center">
-        <h2>
-            @* @Html.DisplayFor(model => model.Type) *@
-
-        </h2>
-        <p class="lead">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-    </div>
-    @* <div class="row row-cols-3 row-cols-md-6 g-4 ">
-        @foreach(var item in Model)
-        {
-        @if(item.Type == "Tivi")
-        {
-        <div class="col">
-            <a asp-area="" asp-controller="SanPhams" asp-action="ChiTiet" asp-route-id="@item.Id" class="text-dark">
-                <div class="card sanPham">
-                    <img src="images/Tivi.png" class="card-img-top" alt="Image of TV">
-                    <div class="card-body border-top">
-                        <p class="card-title fw-bold">@Html.DisplayFor(modelItem => item.NameProduct)</p>
-                    </div>
-                    <div class="card-footer text-center">
-                        <input id="star" type="hidden" class="rating" name="sao" value="@item.SoSaoTrungBinh"
-                            disabled /><span> (@item.SoLuot) </span>
-                        <p class="card-text lead text-primary">@Html.DisplayFor(modelItem => item.Price) đ</p>
-                        <button class="btn btn-primary" type="button">Mua ngay</button>
+    @{
+    var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
+        }
+        @foreach ( var categoryName in categoriesNames)
+        { var pathImage = "images/" + categoryName + ".png";
+        <h2>@categoryName</h2>
+       <div id="carouseProduct1" class="carousel carousel-dark slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active"> 
+                    <div class="row row-cols-5 justify-content-center">
+                        @foreach (var product in Model)
+                        {
+                        if(product.Category == categoryName)
+                        {
+                        <div class="col p-0" >
+                            <div class="card" >
+                                <img src="@pathImage" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <p class="card-title lead d-none d-md-block ">@product.NameProduct</p>
+                                    <p class="card-text text-secondary  d-none d-md-block">@product.Information</p>
+                                    <p class="text-primary"> @Html.DisplayFor(modelItem =>product.Price)  đ</p>
+                                </div>
+                                <div class = "card-footer text-center">
+                                    <a class=" btn btn-primary" asp-controller="Products" asp-action="Detail" asp-route-id="@product.Id">Chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        }
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouseProduct1"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouseProduct1"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button> 
                     </div>
                 </div>
-            </a>
-        </div>
+            </div>
+        </div> 
         }
-        }
-    </div> *@
-</div>

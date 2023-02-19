@@ -5,11 +5,13 @@ public class UpdateRoleUserModel : PageModel
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    public UpdateRoleUserModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    public UpdateRoleUserModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
     {
         _context = context;
         _roleManager = roleManager;
         _userManager = userManager;
+        _signInManager = signInManager;
     }
     public class InputModel
     {
@@ -92,7 +94,7 @@ public class UpdateRoleUserModel : PageModel
                             ErrorMessage = " Error remove: " + resultRemoveRole.ToString();
                         }
                     }
-
+                    await _signInManager.SignInAsync(user, isPersistent: false);
                 }
                 return RedirectToPage("./Index");
             }
