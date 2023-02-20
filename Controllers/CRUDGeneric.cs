@@ -84,8 +84,11 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public virtual IActionResult Create(TViewModel viewModel)
+    public virtual IActionResult Create(TViewModel viewModel, string crud)
     {
+        
+        ViewData["Method"] = crud;
+        ViewData["ControllerName"] = GetControllerName();
         var pathViewCreate = GetViewPathCreate();
         var pathViewMessage = GetViewPathMessageModel();
         MessageViewModel message = new MessageViewModel();
@@ -144,8 +147,11 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public virtual IActionResult Update(TViewModel viewModel)
+    public virtual IActionResult Update(TViewModel viewModel,string crud)
     {
+        
+        ViewData["Method"] = crud;
+        ViewData["ControllerName"] = GetControllerName();
         var pathUpdate = GetViewPathUpdate();
         string pathViewMessage = GetViewPathMessageModel();
         var messageViewModel = new MessageViewModel();
