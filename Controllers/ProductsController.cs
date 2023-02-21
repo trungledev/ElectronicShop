@@ -11,11 +11,11 @@ namespace ElectronicShop.Controllers;
 [Authorize(Roles = "Guest")]
 public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
 {
-    private ElectronicShop.Models.MessageViewModel _errorModel;
+    
     private ViewData? _viewData;
     public ProductsController(ApplicationDbContext context) : base(context, "/Views/Products/")
     {
-        _errorModel = new ElectronicShop.Models.MessageViewModel { Message = "" };
+        
     }
     protected override string GetNamePage() => "Product";
     protected override string GetControllerName() => "Products";
@@ -133,6 +133,8 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
                 Information = product.Information,
                 Price = product.Price,
                 Quantity = product.Quantity,
+                QuantityAllReview = GetQuantityReview(product.ProductId),
+                AverangeStar = GetAverangeStarReview(product.ProductId),
 
                 CategoryId = product.CategoryId,
                 ProducerId = product.ProducerId,
@@ -149,6 +151,26 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         }
         return viewData;
     }
+
+    private double GetAverangeStarReview(int productId)
+    {
+        var allReview = _context.Reviews.Where(r => r.ProductId == productId);
+        if(allReview.Count() > 0)
+        {
+            return allReview.Average(x=> x.NumberOfStar);
+        }
+        else 
+        {
+            return 0;
+        }
+    }
+
+    private int GetQuantityReview(int productId)
+    {
+        var allReviews = _context.Reviews.Where(r => r.ProductId == productId).ToArray();
+        return allReviews.Length;;
+    }
+
     [AllowAnonymous]
     [HttpGet]
     public IActionResult ShowProductsByCategory(int quantity)

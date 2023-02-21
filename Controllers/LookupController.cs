@@ -55,7 +55,7 @@ public abstract class LookupController<TModel> : CRUDGeneric<TModel, LookupViewM
         string name = lookupViewModel.Name;
         string pathViewMessage = GetViewPathMessageModel();
 
-        var messageViewModel = new MessageViewModel();
+        var messageViewModel = new CRUDMessageViewModel();
         if (ModelState.IsValid)
         {
             //Search in database 

@@ -3,7 +3,7 @@
     ViewData["Title"]= ViewData["PageName"];
     var controllerName = ViewData["ControllerName"] as string;
 }
-<a class="btn btn-outline-secondary" href="/Admin">Trở lại</a>
+
 <h2>@ViewData["Title"]</h2>
 <button class="btn btn-primary btnCrud" data-controller="@controllerName" data-crud="Create"
         data-bs-toggle="modal" data-bs-target="#crudModal" type="button">Tạo</button>
@@ -15,6 +15,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    Thông báo
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             </div>
             <div class="modal-body">

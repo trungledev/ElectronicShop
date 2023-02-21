@@ -5,7 +5,7 @@
 @foreach(var item in Model)
                         {   
                             <div class="col">
-                                <a asp-area="" asp-controller="SanPhams" asp-action="ChiTiet" asp-route-id="@item.Id" class="text-dark">
+                                <a asp-controller="Products" asp-action="Detail" asp-route-id="@item.Id" class="text-dark">
                                     <div class="card sanPham">
                                         <img src="@pathImage" class="card-img-top" alt="Image of Amply">
                                         <div class="card-body border-top">

@@ -21,7 +21,7 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
     protected virtual string GetViewPathRead() => _viewPath + "Detail.cshtml";
     protected virtual string GetViewPathUpdate() => _viewPath + "_CreateOrUpdate.cshtml";
     protected virtual string GetViewPathDelete() => _viewPath + "_Delete.cshtml";
-    protected virtual string GetViewPathMessageModel() => "/Views/Shared/_MessageModel.cshtml";
+    protected virtual string GetViewPathMessageModel() => "_Message.cshtml";
 
     protected abstract string GetControllerName();
     protected abstract string GetNamePage();
@@ -32,9 +32,9 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
 
     //Get data for ListViewModel from ListDataModel
     protected abstract IEnumerable<TViewModel> BuildListViewModel(IEnumerable<TModel> models);
-    protected MessageViewModel BuildMessageModel(bool isSuccess, string message)
+    protected CRUDMessageViewModel BuildMessageModel(bool isSuccess, string message)
     {
-        var model = new MessageViewModel();
+        var model = new CRUDMessageViewModel();
         model.Success = isSuccess == true ? 1 : 0;
         model.Message = message;
         return model;
@@ -59,11 +59,12 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
     }
     public virtual IActionResult Read(TTypeId id)
     {
-        var pathViewRead = GetViewPathCreate();
+       
+        var pathViewRead = GetViewPathRead();
         if (pathViewRead != null)
             return View(pathViewRead);
         else
-            return View(pathViewRead);
+            return View("~/");
     }
     [HttpGet]
     public virtual IActionResult Create(string crud)
@@ -91,7 +92,7 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
         ViewData["ControllerName"] = GetControllerName();
         var pathViewCreate = GetViewPathCreate();
         var pathViewMessage = GetViewPathMessageModel();
-        MessageViewModel message = new MessageViewModel();
+        CRUDMessageViewModel message = new CRUDMessageViewModel();
         var model = BuildModel(viewModel);
         viewModel = BuildViewModel(model);
         if (ModelState.IsValid)
@@ -108,10 +109,12 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
             return PartialView(pathViewCreate, viewModel);
         }
     }
+    [AllowAnonymous]
     [HttpGet]
     public virtual IActionResult Detail(TTypeId id)
     {
         var pathRead = GetViewPathRead();
+        ViewData["IsSigned"] = User.Identity!.IsAuthenticated;
         var dataModel = _table.Find(id);
         if (dataModel == null)
         {
@@ -120,7 +123,7 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
         else
         {
             var viewData = BuildViewModel(dataModel);
-            if (pathRead != String.Empty)
+            if (pathRead != String.Empty && viewData != null)
             {
                 return View(pathRead, viewData);
             }
@@ -154,7 +157,7 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
         ViewData["ControllerName"] = GetControllerName();
         var pathUpdate = GetViewPathUpdate();
         string pathViewMessage = GetViewPathMessageModel();
-        var messageViewModel = new MessageViewModel();
+        var messageViewModel = new CRUDMessageViewModel();
         var message = String.Empty;
         if (ModelState.IsValid)
         {
@@ -202,7 +205,7 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
     public virtual IActionResult Delete(int? id, TViewModel? viewModel)
     {
         var pathDelete = GetViewPathDelete();
-        var messageModel = new MessageViewModel();
+        var messageModel = new CRUDMessageViewModel();
 
 
         if (id != 0)

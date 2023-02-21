@@ -3,6 +3,7 @@ namespace ElectronicShop.Controllers;
 public class CartController : Controller
 {
     private ApplicationDbContext _context;
+    private string PathMessageView = "~/Views/Carts/_Message.cshtml";
     private readonly UserManager<ApplicationUser> _userManager;
 
     public CartController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
@@ -47,28 +48,51 @@ public class CartController : Controller
     public async Task<IActionResult> AddToCart(int id, int quantity)
     {
 
-        var messageViewModel = new MessageViewModel();
+        var messageViewModel = new CartMessageViewModel();
         //Find the product
         var productFound = _context.Products.Where(p => p.ProductId == id).FirstOrDefault();
-        if (productFound == null)
+        //User not logged
+        if (!HttpContext.User.Identity!.IsAuthenticated)
         {
-            messageViewModel.Message = "Khong tim thay san pham";
+            Console.WriteLine("Hello, ");
+            messageViewModel.Message = "Đăng nhập/ký để tiếp tục";
             messageViewModel.Success = -1;
-            return PartialView("~/Views/Shared/_MessageModel.cshtml", messageViewModel);
+            messageViewModel.ReturnUrl="~/Products/Detail?id=" + id;
+            messageViewModel.IsSigned = false;
+        }
+        else if (productFound == null)
+        {
+            messageViewModel.Message = "Không tìm thấy sản phẩm";
+            messageViewModel.Success = -1;
         }
         else
         {
-            _context.Carts.Add(new Cart(){
-                UserId = await GetCurrentUserIdAsync(),
-                ProductId = productFound.ProductId,
-                Quantity = quantity,
-                Total = quantity * productFound.Price
-            });
-            await _context.SaveChangesAsync();
-            messageViewModel.Message = "Them vao gio";
-            messageViewModel.Success = 1;
-            return PartialView("~/Views/Shared/_MessageModel.cshtml", messageViewModel);
+            //Check product exist in cart
+            var userIdCurrent = await GetCurrentUserIdAsync();
+            var productCart = _context.Carts.Where(c => c.ProductId == id && c.UserId == userIdCurrent).FirstOrDefault();
+            if (productCart == null)
+            {
+                _context.Carts.Add(new Cart()
+                {
+                    UserId = userIdCurrent,
+                    ProductId = productFound.ProductId,
+                    Quantity = quantity,
+                    Total = quantity * productFound.Price
+                });
+                await _context.SaveChangesAsync();
+                messageViewModel.Message = "Đã thêm vào giỏ hàng";
+                messageViewModel.Success = 1;
+            }
+            else
+            {
+                productCart.Quantity += quantity;
+                _context.Carts.Update(productCart);
+                await _context.SaveChangesAsync();
+                messageViewModel.Message = "Đã tăng thêm số lượng sản phẩm";
+                messageViewModel.Success = 1;
+            }
         }
+        return PartialView(PathMessageView, messageViewModel);
     }
     [HttpGet]
     public async Task UpdateCart(int id, int quantity, double price)
