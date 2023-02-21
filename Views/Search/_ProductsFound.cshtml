@@ -13,7 +13,10 @@
                                             <small class="card-text text-secondary d-none d-md-block">@Html.DisplayFor(modelItem => item.Information)</small>
                                         </div>
                                         <div class="card-footer bg-white text-center">
-                                            @* <input id="star" type="hidden" class="rating" name="sao" value="@item.SoSaoTrungBinh" disabled /><span> (@item.SoLuot) </span> *@
+                                            <span>
+                                            <input id="star" type="hidden" class="rating" name="NumberOfStar" value="@item.AverageStar" disabled /> 
+                                            @item.AverageStar
+                                            (@item.QuantityAllReview) </span>
                                             <p class="card-text lead text-primary">@Html.DisplayFor(modelItem => item.Price) đ</p>
                                             <button class="btn btn-primary" type="button" >Mua ngay</button>
                                         </div>
@@ -21,4 +24,3 @@
                                 </a>
                             </div>
                         }
-<script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>

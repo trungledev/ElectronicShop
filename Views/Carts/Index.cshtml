@@ -182,7 +182,7 @@
                     input.parent().parent().remove();
                 }
                 var donGia = parseInt(_input.attr("data-donGia"));
-                $.get("/Cart/UpdateCart?id=" + id + "&quantity=" + soLuong + "&price=" + donGia, function () {
+                $.get("/Carts/UpdateCart?id=" + id + "&quantity=" + soLuong + "&price=" + donGia, function () {
                 });
             }
 

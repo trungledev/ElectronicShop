@@ -21,14 +21,14 @@
                                 <div class="card-body">
                                     <p class="card-title lead d-none d-md-block ">@product.NameProduct</p>
                                     <p class="card-text text-secondary  d-none d-md-block">@product.Information</p>
-                                    <p class="text-primary"> @Html.DisplayFor(modelItem =>product.Price)  đ</p>
-                                    <span>
-                                    <input id="star" type="hidden" class="rating" value="@product.AverangeStar" disabled />
-                                    @product.AverangeStar (@product.QuantityAllReview)
-                                    </span>
                                     
                                 </div>
                                 <div class = "card-footer text-center">
+                                    <p class="text-primary"> @Html.DisplayFor(modelItem =>product.Price)  đ</p>
+                                    <p class="mb-2">
+                                    <input type="hidden" class="rating" value="@product.AverageStar" disabled />
+                                    @product.AverageStar (@product.QuantityAllReview)
+                                    </p>
                                     <a class=" btn btn-primary" asp-controller="Products" asp-action="Detail" asp-route-id="@product.Id">Chi tiết</a>
                                 </div>
                             </div>

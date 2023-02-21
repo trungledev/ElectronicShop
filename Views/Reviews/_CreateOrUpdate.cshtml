@@ -12,7 +12,7 @@ else{
                                 <div>
                                     <label class="form-label h5" asp-for="NumberOfStar"></label>
                                 </div>
-                                <input type="hidden" class="rating" value="@Model.NumberOfStar" name="NumberOfStar"/>
+                                <input type="hidden" class="rating" value="@Model.NumberOfStar" id="numberOfStarCreate" name="NumberOfStar"/>
                             </div>
                             <div class="mb-3 text-start">
                                 <label class="form-label h5" asp-for="Title"></label>
@@ -35,14 +35,14 @@ else{
             
             var formData = new FormData();
             var productId = $("input[name='ProductId']").val();
-            var numberOfStar = $("input[name='NumberOfStar']").val();
+            var numberOfStar = $("input#numberOfStarCreate").val();
             var title =  $("input[name='Title']").val();
             var content = $("textarea[name='Content']").val();
             formData.append("ProductId", productId );
             formData.append("NumberOfStar", numberOfStar );
             formData.append("Title",title);
             formData.append("Content",content);
-           
+            alert(numberOfStar + " " + title );
             var productId = @Model.ProductId;
 
             $.ajax ({

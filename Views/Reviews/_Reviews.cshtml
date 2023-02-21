@@ -22,7 +22,6 @@
                     @* <p class="mb-1 text-secondary">@reviewOfUser.NgayDang</p> *@
                     <small>Review by @reviewOfUser.Author</small>
                     <div>
-                        <button id="btnSuaReview" data-id="@reviewOfUser.ProductId" class="btn btn-success" type="button"> Chỉnh sửa</button>
                         <button id="btnXoaReview" data-id="@reviewOfUser.ProductId"  class="btn btn-danger" type="button"> Xóa</button>
                     </div>
                 </div>
@@ -88,12 +87,4 @@
             });
         });
         
-        
-        $("button#btnSuaReview").click(function(){
-            var productId = $(this).attr("data-id");
-            $.get("/Reviews/Edit?productId=" + productId,function(data){
-                $(".toast-body").html(data);
-                ShowToast();
-            });
-        });
         </script>

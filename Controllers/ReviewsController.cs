@@ -105,7 +105,7 @@ public class ReviewsController : Controller
     {
         var _context = context;
         var reviewsViewModel = new List<ReviewViewModel>();
-        var avarageStar = new ReviewViewModel();
+        var reviewViewModel = new ReviewViewModel();
         var reviews = _context.Reviews.Where(x => x.ProductId == id);
         if (reviews != null)
         {
@@ -144,7 +144,7 @@ public class ReviewsController : Controller
             if (quantityAllReview > 0)
                 averageStar = (quantityReviewOneStar * 1 + quantityReviewTwoStar * 2 + quantityReviewThreeStar * 3 + quantityReviewFourStar * 4 + quantityReviewFiveStar * 5) / (double)quantityAllReview;
 
-            avarageStar = new ReviewViewModel
+            reviewViewModel = new ReviewViewModel
             {
                 QuantityAllReview = quantityAllReview,
                 AverageStar = averageStar,
@@ -156,76 +156,7 @@ public class ReviewsController : Controller
         {
             //Khong Tim Thay San Pham
         }
-        return avarageStar;
-    }
-    [HttpPost]
-    public async Task<IActionResult> AddReview([Bind(include: "NumberOfStar,Title,Content")] ReviewViewModel reviewInput, int productId)
-    {
-        var messageModel = new ReviewMessageViewModel();
-        //Xac thuc Dang nhap
-        if (!User.Identity!.IsAuthenticated)
-        {
-            messageModel.IsSigned = false;
-            messageModel.Success = -1;
-            messageModel.ProductId = productId;
-            messageModel.Message = "Đăng nhập/ký để tiếp tục";
-            return PartialView(_pathMessageView, messageModel);
-
-        }
-        else if (!ModelState.IsValid)
-        {
-#warning Xác định lại đường dẫn và phương án xử lý cho người dùng sai cú pháp 
-
-        }
-        else
-        {
-            var userId = await GetCurrentUserId();
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var hoVaTenUser = user.FullName;
-            Console.WriteLine(" Email : " + hoVaTenUser);
-            if (productId != 0)
-            {
-                try
-                {
-                    var reviewInData = _context.Reviews.Where(x => x.UserId == userId && x.ProductId == productId).FirstOrDefault();
-                    if (reviewInData == null)
-                    {
-                        _context.Reviews.Add(new Review
-                        {
-                            ProductId = productId,
-                            UserId = userId,
-                            Title = reviewInput.Title,
-                            Content = reviewInput.Content,
-                            // NgayDang = DateTime.Now,
-                            NumberOfStar = reviewInput.NumberOfStar
-
-                        });
-                        await _context.SaveChangesAsync();
-                        messageModel.Success = 1;
-                        messageModel.Message = "Review thành công";
-                        Console.WriteLine("Them Review");
-                        return PartialView(_pathMessageView, messageModel);
-                    }
-                    else
-                    {
-                        //Nguoi dung da review
-                        Console.WriteLine("Da Review?");
-                    }
-
-                }
-                catch (System.Data.DataException ex)
-                {
-                    //Loi Luu vaoData
-                    Console.WriteLine("Loi luu data" + ex.Message);
-                    throw;
-                }
-            }
-            else
-            {
-                //id san pham  = 0
-            }
-        }
-        return PartialView(_pathMessageView, messageModel);
+        return reviewViewModel;
     }
 
     [HttpGet]
@@ -281,6 +212,7 @@ public class ReviewsController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateOrUpdateAsync([Bind(include: "ProductId,NumberOfStar,Title,Content")] ReviewViewModel input)
     {
+        Console.WriteLine("number of stars :" + input.NumberOfStar);
         var messageModel = new ReviewMessageViewModel();
         if (!ModelState.IsValid)
         {
@@ -334,51 +266,6 @@ public class ReviewsController : Controller
                     Console.WriteLine("Loi them Review");
                     return PartialView(_pathMessageView, messageModel);
                 }
-            }
-        }
-
-    }
-    [HttpPost]
-    public async Task<IActionResult> EditAsync([Bind(include: "ProductId,NumberOfStar,Title,Content")] ReviewViewModel input)
-    {
-        var errorModel = new ReviewMessageViewModel();
-        var idApplicationUser = await GetCurrentUserId();
-        if (input.ProductId == 0)
-        {
-            errorModel.Success = 1;
-            errorModel.Message = "Lỗi thông tin sản phẩm";
-            return PartialView(_pathMessageView, errorModel);
-        }
-        else
-        {
-            var review = _context.Reviews.Where(x => x.ProductId == input.ProductId && x.UserId == idApplicationUser).FirstOrDefault();
-            if (review != null)
-            {
-                try
-                {
-                    review.NumberOfStar = input.NumberOfStar;
-                    review.Title = input.Title;
-                    review.Content = input.Content;
-                    _context.SaveChanges();
-
-                    errorModel.Success = 1;
-                    errorModel.Message = "Review đã được sửa";
-
-                    return RedirectToAction("Detail", "Products", new { id = input.ProductId });
-                }
-                catch (System.Exception x)
-                {
-                    errorModel.Success = -1;
-                    errorModel.Message = x.Message + " +  Lỗi lưu data";
-                    return PartialView(_pathMessageView, errorModel);
-                }
-
-            }
-            else
-            {
-                errorModel.Success = -1;
-                errorModel.Message = "Không tìm thấy review";
-                return PartialView(_pathMessageView, errorModel);
             }
         }
 

@@ -14,7 +14,7 @@
                 <h1>@Html.DisplayFor(model=> model.NameProduct)</h1>
                 <p class=" lead text-secondary mb-3">@Html.DisplayFor(model => model.Information)</p>
                 <h2 class="text-primary mb-3">@Html.DisplayFor(model => model.Price) đ</h2>
-                @* <input id="star" type="hidden" class="rating" name="NumberOfStar" value="@Model.SoSaoTrungBinh" disabled /><span> ( @Model.SoLuot )</span> *@
+                <input id="star" type="hidden" class="rating" name="NumberOfStar" value="@Model.AverageStar" disabled /><span> ( @Model.QuantityAllReview )</span> 
                 <p class="lead">
                     Còn: @Html.DisplayFor(model => model.Quantity) (sp)</p>
                 <div>
@@ -113,7 +113,7 @@ else
             var idSanPham = @Model.Id;
             var valInput = $(this).parent().siblings("input").val();
             var formData= "id=" + idSanPham + "&quantity=" + valInput;
-            $.post("/Cart/AddToCart?" + encodeURI(formData),function(data){
+            $.post("/Carts/AddToCart?" + encodeURI(formData),function(data){
                 $(".toast-body").html(data);
                 ShowToast();
             });

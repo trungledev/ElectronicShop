@@ -55,6 +55,8 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
             viewModel.Information = model.Information;
             viewModel.Price = model.Price;
             viewModel.Quantity = model.Quantity;
+            viewModel.AverageStar = GetAverangeStarReview(model.ProductId);
+            viewModel.QuantityAllReview = GetQuantityReview(model.ProductId);
 
             viewModel.CategoryId = model.CategoryId;
             viewModel.ProducerId = model.ProducerId;
@@ -134,7 +136,7 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
                 Price = product.Price,
                 Quantity = product.Quantity,
                 QuantityAllReview = GetQuantityReview(product.ProductId),
-                AverangeStar = GetAverangeStarReview(product.ProductId),
+                AverageStar = GetAverangeStarReview(product.ProductId),
 
                 CategoryId = product.CategoryId,
                 ProducerId = product.ProducerId,

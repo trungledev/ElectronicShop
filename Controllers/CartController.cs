@@ -1,12 +1,12 @@
 namespace ElectronicShop.Controllers;
 
-public class CartController : Controller
+public class CartsController : Controller
 {
     private ApplicationDbContext _context;
     private string PathMessageView = "~/Views/Carts/_Message.cshtml";
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public CartController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public CartsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
         _context = context;
