@@ -21,7 +21,7 @@ public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
     protected virtual string GetViewPathRead() => _viewPath + "Detail.cshtml";
     protected virtual string GetViewPathUpdate() => _viewPath + "_CreateOrUpdate.cshtml";
     protected virtual string GetViewPathDelete() => _viewPath + "_Delete.cshtml";
-    protected virtual string GetViewPathMessageModel() => "_Message.cshtml";
+    protected virtual string GetViewPathMessageModel() => _viewPath + "_Message.cshtml";
 
     protected abstract string GetControllerName();
     protected abstract string GetNamePage();

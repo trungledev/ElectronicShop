@@ -16,12 +16,12 @@ public class ReviewsController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(int productId)
     {
-        //Data cua ViewData[]
-        var starDetail = GetAllNumberStar(productId, _context);
-        var reviewViewModel = new ReviewViewModel();
 
         var reviewsViewModels = new List<ReviewViewModel>();
         var reviews = _context.Reviews.Where(x => x.ProductId == productId).ToList();
+        //Data cua ViewData[]
+        var starDetail = GetAllNumberStar(productId, reviews);
+        var reviewViewModel = new ReviewViewModel();
         if (reviews.Count() > 0)
         {
             foreach (var review in reviews)
@@ -101,54 +101,36 @@ public class ReviewsController : Controller
 
     }
 
-    public static ReviewViewModel GetAllNumberStar(int id, ApplicationDbContext context)
+    private static ReviewViewModel GetAllNumberStar(int productId, IList<Review> reviewsOfUser)
     {
-        var _context = context;
         var reviewsViewModel = new List<ReviewViewModel>();
         var reviewViewModel = new ReviewViewModel();
-        var reviews = _context.Reviews.Where(x => x.ProductId == id);
-        if (reviews != null)
+        if (reviewsOfUser != null)
         {
-            var soReview = reviews.Count();
-            IDictionary<string, int> datailStar = new Dictionary<string, int>();
-            var oneStar = from review in reviews
-                               where review.NumberOfStar == 1
-                               select review;
-            var twoStar = from review in reviews
-                               where review.NumberOfStar == 2
-                               select review;
-            var threeStar = from review in reviews
-                              where review.NumberOfStar == 3
-                              select review;
-            var fourStar = from review in reviews
-                               where review.NumberOfStar == 4
-                               select review;
-            var fiveStar = from review in reviews
-                               where review.NumberOfStar == 5
-                               select review;
-            var quantityReviewOneStar = oneStar.Count();
-            var quantityReviewTwoStar = twoStar.Count();
-            var quantityReviewThreeStar = threeStar.Count();
-            var quantityReviewFourStar = fourStar.Count();
-            var quantityReviewFiveStar = fiveStar.Count();
+            IDictionary<string, int> datailStars = new Dictionary<string, int>();
+            
+            var quantityReviewOneStar = reviewsOfUser.Count(x => x.NumberOfStar == 1);
+            var quantityReviewTwoStar = reviewsOfUser.Count(x => x.NumberOfStar == 2);
+            var quantityReviewThreeStar = reviewsOfUser.Count(x => x.NumberOfStar == 3);
+            var quantityReviewFourStar = reviewsOfUser.Count(x => x.NumberOfStar == 4);
+            var quantityReviewFiveStar = reviewsOfUser.Count(x => x.NumberOfStar == 5);
 
 
-            datailStar.Add("oneStar", quantityReviewOneStar);
-            datailStar.Add("twoStar", quantityReviewTwoStar);
-            datailStar.Add("threeStar", quantityReviewThreeStar);
-            datailStar.Add("fourStar", quantityReviewFourStar);
-            datailStar.Add("fiveStar", quantityReviewFiveStar);
+            datailStars.Add("oneStar", quantityReviewOneStar);
+            datailStars.Add("twoStar", quantityReviewTwoStar);
+            datailStars.Add("threeStar", quantityReviewThreeStar);
+            datailStars.Add("fourStar", quantityReviewFourStar);
+            datailStars.Add("fiveStar", quantityReviewFiveStar);
 
-            var quantityAllReview = (quantityReviewOneStar + quantityReviewTwoStar + quantityReviewThreeStar + quantityReviewFourStar + quantityReviewFiveStar);
+            var quantityAllReview = reviewsOfUser.Count();
             double averageStar = 0;
             if (quantityAllReview > 0)
-                averageStar = (quantityReviewOneStar * 1 + quantityReviewTwoStar * 2 + quantityReviewThreeStar * 3 + quantityReviewFourStar * 4 + quantityReviewFiveStar * 5) / (double)quantityAllReview;
-
+                averageStar = reviewsOfUser.Average(x => x.NumberOfStar);
             reviewViewModel = new ReviewViewModel
             {
                 QuantityAllReview = quantityAllReview,
                 AverageStar = averageStar,
-                DetailStars = datailStar
+                DetailStars = datailStars
             };
 
         }

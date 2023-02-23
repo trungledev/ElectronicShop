@@ -39,6 +39,7 @@ Layout = "/Views/CRUD/_CreateOrUpdateLayout.cshtml";
 <div class=" mb-3">
     <label class="form-label" asp-for="Price"></label>
     <input asp-for="Price" class="form-control">
+    <p>Kết quả: <span id="show-price">0</span> đ</p>
     <span class="danger" asp-validation-for="Price" style="color:red;"></span>
 </div>
 <div class=" mb-3">
@@ -46,3 +47,16 @@ Layout = "/Views/CRUD/_CreateOrUpdateLayout.cshtml";
     <input asp-for="Quantity" class="form-control">
     <span class="danger" asp-validation-for="Quantity" style="color:red;"></span>
 </div>
+<script type="text/javascript">
+     $("input#Price").keyup(function(){
+                var input = $(this);
+                var value = input.val();
+                var daThemDauPhay = ThemDauPhay(value);
+                $("span#show-price").text(daThemDauPhay);
+            });
+            function ThemDauPhay(number) {
+                var nfObject = new Intl.NumberFormat('en-US');
+               var output = nfObject.format(number);
+               return output;
+            }
+</script>

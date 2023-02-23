@@ -22,8 +22,8 @@
 
     <!-- bootstrap Rating -->
     <link href="~/bootstrapRating/bootstrap-rating.css" rel="stylesheet">
-    @*
-    <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script> *@
+    
+    @* <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>  *@
     <style>
         a {
             text-decoration: none;
@@ -136,9 +136,9 @@
         <!-- Thanh Tim Kiem -->
         <div class=" px-2 py-2 border-bottom bg-light mb-3 justify-content-center">
             <div class="container">
-                <form class="d-flex col-12 mb-2 mb-lg-0 me-lg-auto" method="post" asp-controller="TimKiem"
+                <form class="d-flex col-12 mb-2 mb-lg-0 me-lg-auto" method="post" asp-controller="Search"
                     asp-action="Index" enctype="application/x-www-form-urlencoded">
-                    <input name="tuTimKiem" type="search" class="form-control" placeholder="Tìm kiếm..."
+                    <input name="wordSearch" type="search" class="form-control" placeholder="Tìm kiếm..."
                         aria-label="Search" />
                     <button class="btn btn-outline-success ms-1" type="submit">
                         TìmKiếm
@@ -173,7 +173,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>
+    @* <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script> *@
     <script>
         $("ul#categories").load("/Home/CategoriesLayout");
         $("#btnBackToTop").click(function () {

@@ -78,13 +78,7 @@ var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
     </div>
   </section>
 
-  <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>
   <script>
-    $('input.rating').rating({
-      filled: 'bi bi-star-fill',
-      empty: 'bi bi-star'
-    });
-
     $(document).ready(function () {
       var showProduct = $("div#showProduct");
       var categoryName = showProduct.attr("data-categoryName");

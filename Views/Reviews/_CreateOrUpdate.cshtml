@@ -42,8 +42,6 @@ else{
             formData.append("NumberOfStar", numberOfStar );
             formData.append("Title",title);
             formData.append("Content",content);
-            alert(numberOfStar + " " + title );
-            var productId = @Model.ProductId;
 
             $.ajax ({
             type: "POST",

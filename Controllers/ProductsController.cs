@@ -170,7 +170,7 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
     private int GetQuantityReview(int productId)
     {
         var allReviews = _context.Reviews.Where(r => r.ProductId == productId).ToArray();
-        return allReviews.Length;;
+        return allReviews.Length;
     }
 
     [AllowAnonymous]
