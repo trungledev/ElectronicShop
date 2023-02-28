@@ -49,13 +49,13 @@ public abstract class LookupController<TModel> : CRUDGeneric<TModel, LookupViewM
         return lookupViewModels;
     }
     [HttpPost]
-    public override IActionResult Create(LookupViewModel lookupViewModel)
+    public override IActionResult Create(LookupViewModel lookupViewModel,string crud)
     {
         //Check name of Lookup Exists
         string name = lookupViewModel.Name;
         string pathViewMessage = GetViewPathMessageModel();
 
-        var messageViewModel = new MessageViewModel();
+        var messageViewModel = new CRUDMessageViewModel();
         if (ModelState.IsValid)
         {
             //Search in database 

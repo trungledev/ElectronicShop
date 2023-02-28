@@ -9,3 +9,4 @@ global using ElectronicShop.Models;
 global using ElectronicShop.Services;
 global using ElectronicShop.Controllers.DataController;
 global using ElectronicShop.Data;
+global using ElectronicShop.Models.MessageViewModels;

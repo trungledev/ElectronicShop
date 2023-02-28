@@ -3,12 +3,12 @@
     ViewData["Title"] = "Giỏ hàng";
 }
     <section id="SanPhamMua">
-        <div class="container-xl">
+        <div class="container-xl" id="cartBody">
             <div class="row justify-content-around">
                 <div class="col-md-8 border-bottom align-items-center rounded shadow-lg ">
                     <div class="row justify-content-end border-bottom">
                         <div class="col-1 text-md-center me-5 me-md-0">
-                            <input type="checkbox" name="" id="checkboxAll">
+                            <input type="checkbox" id="checkboxAll">
                         </div>
                         <div class="col-9 col-md-5 ">
                             <p class="lead fw-bold">@Html.DisplayNameFor(model => model.Name)</p>
@@ -19,15 +19,15 @@
                         <div class="col-2 d-none d-md-block">
                             <p class="fw-bold">@Html.DisplayNameFor(model => model.Total)</p>
                         </div>
-                        <div class="col-2 d-none d-md-block">
-                            @* <p class="fw-bold">Thao tác</p> *@
+                        <div class="col-1 col-lg-2 ">
+                            @* <button class="btn btn-danger" type="button">Xóa tất cả</button> *@
                         </div>
                     </div>
                     @foreach(var item in Model)
                     {
                     <div class="row align-items-center justify-content-center text-center mt-3" data-id="@item.Id">
                         <div class="col-1 text-start text-md-center checkbox mb-3">
-                            <input type="checkbox" class="checkbox" name="" data-id="@item.Id">
+                            <input type="checkbox" class="checkbox" name="ProductIds" value="@item.Id" data-id="@item.Id">
                         </div>
                         <div class="col-9 col-md-5 mb-1">
                             <div class="row">
@@ -99,7 +99,7 @@
                             <span class="lead" id="tongTien">Tổng giá tiền: 0đ</span>
                             đ
                         </p>
-                        <button class="btn btn-warning">Đặt Hàng</button>
+                        <button class="btn btn-warning" id="btnCheckout">Đặt Hàng</button>
                     </div>
                 </div>
             </div>
@@ -111,6 +111,14 @@
     <script>
         $(document).ready(function () {
             UpdateTongTien();
+            $("button#btnCheckout").click(function (event) {
+               
+                // Returns an array of #lbItems' selected values.
+                var dataInput = serealizeSelects($("input[name='ProductIds']:checked"));
+                $.get("/Carts/Checkout?productIds=" + dataInput,function (data) {
+                    $("div#cartBody").html(data);
+                });
+            });
             //Nut tang giam input
             $("button.tang").click(function () {
                 event.preventDefault();
@@ -134,7 +142,6 @@
                     }
                 else if (parseInt(inputSoLuong.val()) > 0) {
                     inputSoLuong.val(parseInt(inputSoLuong.val()) - 1);
-                    
                     
                     UpdateThanhTien(inputSoLuong);
                     UpdateDatabase(inputSoLuong);
@@ -165,6 +172,12 @@
                 })
 
             });
+            function serealizeSelects (select)
+            {
+                var array = [];
+                select.each(function(){ array.push($(this).val()) });
+                return array;
+            }
             function UpdateThanhTien(input) {
                 var _input = input;
                 var donGia = parseInt(_input.attr("data-donGia"));
@@ -182,7 +195,7 @@
                     input.parent().parent().remove();
                 }
                 var donGia = parseInt(_input.attr("data-donGia"));
-                $.get("/Cart/UpdateCart?id=" + id + "&quantity=" + soLuong + "&price=" + donGia, function () {
+                $.get("/Carts/UpdateCart?id=" + id + "&quantity=" + soLuong + "&price=" + donGia, function () {
                 });
             }
 

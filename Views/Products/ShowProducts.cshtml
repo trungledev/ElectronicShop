@@ -5,41 +5,35 @@
         @foreach ( var categoryName in categoriesNames)
         { var pathImage = "images/" + categoryName + ".png";
         <h2>@categoryName</h2>
-       <div id="carouseProduct1" class="carousel carousel-dark slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active"> 
-                    <div class="row row-cols-5 justify-content-center">
-                        @foreach (var product in Model)
-                        {
-                        if(product.Category == categoryName)
-                        {
-                        <div class="col p-0" >
-                            <div class="card" >
-                                <img src="@pathImage" class="card-img-top" alt="...">
-                                <div class="card-body">
-                                    <p class="card-title lead d-none d-md-block ">@product.NameProduct</p>
-                                    <p class="card-text text-secondary  d-none d-md-block">@product.Information</p>
-                                    <p class="text-primary"> @Html.DisplayFor(modelItem =>product.Price)  đ</p>
-                                </div>
-                                <div class = "card-footer text-center">
-                                    <a class=" btn btn-primary" asp-controller="Products" asp-action="Detail" asp-route-id="@product.Id">Chi tiết</a>
-                                </div>
+        <div class="row row-cols-2 row-cols-md-3 g-4 justify-content-center mx-3">            
+                @foreach (var product in Model)
+                {
+                if(product.Category == categoryName)
+                {
+
+                <div class="col">
+                    <a asp-controller="Products" asp-action="Detail" asp-route-id="@product.Id" class="text-dark">
+                        <div class="card sanPham">
+                            <img src="@pathImage" class="card-img-top" alt="Image of product">
+                            <div class="card-body border-top">
+                                <p class="card-title fw-bold">@Html.DisplayFor(modelproduct => product.NameProduct)</p>
+                                <small class="card-text text-secondary d-none d-md-block">@Html.DisplayFor(modelproduct =>
+                                    product.Information)</small>
+                            </div>
+                            <div class="card-footer bg-white text-center">
+                                <span>
+                                    <input id="star" type="hidden" class="rating" name="NumberOfStar"
+                                        value="@product.AverageStar" disabled />
+                                    @product.AverageStar
+                                    (@product.QuantityAllReview) </span>
+                                <p class="card-text lead text-primary">@Html.DisplayFor(modelproduct => product.Price) đ</p>
+                                <button class="btn btn-primary" type="button">Mua ngay</button>
                             </div>
                         </div>
-                        }
-                        }
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouseProduct1"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouseProduct1"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button> 
-                    </div>
+                    </a>
                 </div>
+                }
+                }
             </div>
-        </div> 
         }
+        <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script>

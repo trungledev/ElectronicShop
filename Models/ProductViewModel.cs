@@ -37,7 +37,7 @@ public class ProductViewModel
     public string? Status { get; set; }
     public IEnumerable<SelectListItem>? Statuses { get; set; } 
 
-    public double? AverangeStarReview { get; set; }
-    public int? NumbericOfReview { get; set; }
+    public double AverageStar { get; set; }
+    public int QuantityAllReview { get; set; }
 
 }

@@ -24,9 +24,9 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <button id="btnCrud" class="btn btn-success" data-controller="@controllerName" data-route-id="@item.Id"
+                <button class="btn btn-success btnCrud" data-controller="@controllerName" data-route-id="@item.Id"
                     data-crud="Update" data-bs-toggle="modal" data-bs-target="#crudModal" type="button">Sửa</button> |
-                <button id="btnCrud" class="btn btn-danger" data-controller="@controllerName" data-route-id="@item.Id"
+                <button class="btn btn-danger btnCrud" data-controller="@controllerName" data-route-id="@item.Id"
                     data-crud="Delete" data-bs-toggle="modal" data-bs-target="#crudModal" type="button">Xóa</button>
             </td>
         </tr>

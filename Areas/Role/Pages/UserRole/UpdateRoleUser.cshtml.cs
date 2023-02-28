@@ -94,8 +94,8 @@ public class UpdateRoleUserModel : PageModel
                             ErrorMessage = " Error remove: " + resultRemoveRole.ToString();
                         }
                     }
-                    await _signInManager.SignInAsync(user, isPersistent: false);
                 }
+                await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToPage("./Index");
             }
             else
