@@ -6,11 +6,37 @@ var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
   @* Su Kien *@
   <section id="suKien">
     <div div="container-xl" style="position:relative">
-        <img class="img-fluid" src="images/HeroImage.png" alt="HeroImage" />
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item" data-bs-interval="5000">
+                    <img class="img-fluid" src="images/HeroImage.png" alt="HeroImage" />
         <div style="position: absolute;
   top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);"> <a asp-controller="Search" asp-action="Index" class="btn btn-lg btn-primary">Shop Now</a></div>
+                </div>
+                <div class="carousel-item active" data-bs-interval="20000">
+                    <div class="ratio ratio-16x9">
+                        <video controls autoplay poster="images/poster.png">
+                            <source src="videos/intro.mp4"  type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    
+        
     </div>
   </section>
   @* Danh Muc *@
@@ -38,6 +64,12 @@ var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
   @* Area display of Product show all Type have (Tivi, Amply, Speaker,...) *@
   <section id="showProduct">
     <div class="container-xl">
+      <div id="loadingDiv" class="text-center my-3">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h2>Loading Product ....</h2>
+      </div>
       <div  id="showProduct" >
       </div>
     </div>
@@ -45,9 +77,18 @@ var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
 
   <script>
     $(document).ready(function () {
+      
+  var loading = $('div#loadingDiv').hide();
+$(document)
+  .ajaxStart(function () {
+    loading.show();
+  })
+  .ajaxStop(function () {
+    loading.hide();
+  });
       var showProduct = $("div#showProduct");
       var categoryName = showProduct.attr("data-categoryName");
       $("div#showProduct").load("/Products/ShowProductsByCategory/?quantity=5");
     });
-
+;
   </script>

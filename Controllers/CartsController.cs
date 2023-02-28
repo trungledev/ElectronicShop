@@ -110,5 +110,36 @@ public class CartsController : Controller
             await _context.SaveChangesAsync();
         }
     }
+    [HttpGet]
+    public IActionResult Checkout(string productIds)
+    {
+        var productIdArray = productIds.Split(',');
+        var cartViewModels =new List<CartViewModel>();
+        foreach(var productIdStr in productIdArray)
+        {
+            int productId =0;
+            Int32.TryParse(productIdStr, out productId);
 
+            var cartFound = _context.Carts.Where(c => c.ProductId == productId ).FirstOrDefault();
+            if(cartFound != null)
+            {
+                cartViewModels.Add(new CartViewModel{
+                    Name = GetProductName(productId),                    
+                    Quantity = cartFound.Quantity,
+                    Total = cartFound.Total
+                });
+            }
+        }
+        return PartialView("_Checkout",cartViewModels);
+    
+    }
+    [HttpPost]
+    public IActionResult Checkout([Bind(include:("FirstName,LastName,UserName,Email,"))] CheckoutViewModel input)
+    {
+        return View();
+    } 
+    private string GetProductName(int productId)
+    {
+        return _context.Products.Find(productId)!.Name;
+    }
 }
