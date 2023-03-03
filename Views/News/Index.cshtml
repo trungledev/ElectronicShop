@@ -1,13 +1,13 @@
 @model IEnumerable<NewsViewModel>
 
 @{
-    ViewData["Title"] = "News";
+    ViewData["Title"] = "Tin tức";
 }
-<h1 class="text-decoration-underline">
+<h2 class="text-center">
     @ViewData["Title"]
-</h1>
+</h2>
 <h5>Nguồn: NewsAPI.org</h5>
 <p class="text-danger">@ViewBag.ErrorMessage</p>
-<p>Total results: @ViewBag.TotalResults (Pricing Free for development: 100 news and 100 request in day)</p>
+<p>Số lượng kết quả tìm thấy: @ViewBag.TotalResults (Pricing Free for development: 100 news and 100 request in day)</p>
 <p>(Sẽ bị lặp lại vài bản tin) </p>
 @await Html.PartialAsync("_NewsFound", Model)

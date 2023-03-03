@@ -18,7 +18,7 @@
         {
         @foreach (var newsItem in Model)
         {
-           <div class="card col mx-3" style="width: 18rem;">
+           <div class="card col mx-3" style="width: 18rem; height: auto;">
                 <div class="card-header">
                     <img src="@newsItem.UrlToImage" class="card-img-top img-fluid" alt="...">
                 </div>
@@ -27,7 +27,8 @@
                     <p class="card-text text-secondary">@newsItem.Description</p>
                 </div>
                 <div class="card-footer">
-                    <a href="@newsItem.Url" class="btn btn-primary">Get Detail</a>
+                    <p>Thời gian đăng: @newsItem.PublishedAt</p>
+                    <a href="@newsItem.Url" class="btn btn-primary" target="_blank">Xem chi tiết</a>
                 </div>
             </div>
         }
