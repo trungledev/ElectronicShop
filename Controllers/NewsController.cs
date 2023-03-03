@@ -5,8 +5,7 @@ namespace MvcMovie.Controllers;
 
 public class NewsController : Controller
 {
-    private readonly string PATH_FILE_SAVE = "DataNewsApi/DataNews.txt";
-    private readonly string PATH_FILE_TIME = "DataNewsApi/TimeGetApiLast.txt";
+    private readonly string PATH_FILE_SAVE = "DataNews/DataNews.txt";
     private readonly string KEY_WORD = "electronic";
     public NewsController()
     {
@@ -29,13 +28,23 @@ public class NewsController : Controller
         }
         catch (HttpRequestException exception)
         {
-            dataApi = ReadFileAndConvertToDataNews(PATH_FILE_SAVE);
-            if (dataApi == null)
+            try
             {
-                //False Get API response
-                string errorMessage = "Failed to read and get API response: " + exception.Message;
-                ViewBag.ErrorMessage = errorMessage;
-                return View(newsViewModels);
+                dataApi = ReadFileAndConvertToDataNews(PATH_FILE_SAVE);
+                if (dataApi == null)
+                {
+                    //False Get API response
+                    string errorMessage = "Failed to read and get API response: " + exception.Message;
+                    ViewBag.ErrorMessage = errorMessage;
+                    return View(newsViewModels);
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                dataApi = null;
+                ViewBag.ErrorMessage = ex.Message;
+                System.IO.Directory.CreateDirectory("DataNews");
+                System.IO.File.WriteAllText(PATH_FILE_SAVE,"");
             }
         }
         catch (Exception ex)
