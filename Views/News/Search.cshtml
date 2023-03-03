@@ -1,0 +1,5 @@
+@model IEnumerable<NewsViewModel>
+
+<h3> Tin tức được tìm thấy bởi: @ViewBag.KeyWord</h3>
+<p class="text-danger">@ViewBag.ErrorMessage</p>
+@await Html.PartialAsync("_NewsFound", Model)
