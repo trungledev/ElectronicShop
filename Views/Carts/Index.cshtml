@@ -116,6 +116,7 @@
                 // Returns an array of #lbItems' selected values.
                 var dataInput = serealizeSelects($("input[name='ProductIds']:checked"));
                 $.get("/Carts/Checkout?productIds=" + dataInput,function (data) {
+                    alert("Chức năng Checkout hiện mới chỉ có phần hiển thị Phần chức năng sẽ được bổ sung sau!");
                     $("div#cartBody").html(data);
                 });
             });

@@ -34,9 +34,10 @@ public class SearchController : Controller
         ViewData["ProducerNames"] = producerNames;
 
         var data = GetData();
+        ViewData["WordSearch"] = wordSearch;
 
         //Show all san pham
-        if (String.IsNullOrEmpty(wordSearch) || wordSearch.Length < 4)
+        if (String.IsNullOrEmpty(wordSearch))
         {
             var allProducts = _context.Products.ToList();
             var allProductsViewModel = DataToViewModel(allProducts);
@@ -46,7 +47,7 @@ public class SearchController : Controller
         {
             Regex pattern = new Regex("[^a-zA-Z0-9]");
             wordSearch = pattern.Replace(wordSearch, "\n");
-            ViewData["WordSearch"] = wordSearch;
+
         }
         //So sanh Cum
         string[] keywords = SplitInput(wordSearch);
@@ -130,16 +131,16 @@ public class SearchController : Controller
     {
         var allProducts = _context.Products.ToList();
         var allProductsViewModel = DataToViewModel(allProducts);
-        if(string.IsNullOrEmpty(filters.MinPrice))
+        if (string.IsNullOrEmpty(filters.MinPrice))
         {
             filters.MinPrice = "0";
         }
-        if(string.IsNullOrEmpty(filters.MaxPrice))
+        if (string.IsNullOrEmpty(filters.MaxPrice))
         {
             filters.MaxPrice = "0";
         }
 
-        if (filters.Categories == null && filters.Producers == null && filters.MinPrice =="0" &&filters.MaxPrice =="0" )
+        if (filters.Categories == null && filters.Producers == null && filters.MinPrice == "0" && filters.MaxPrice == "0")
             return PartialView(PATH_VIEW, allProductsViewModel);
         filters.Categories ??= string.Empty;
         filters.Producers ??= string.Empty;
@@ -207,7 +208,7 @@ public class SearchController : Controller
         //Loc theo gia ca 
         if (min >= 0 && max >= 0 && max > min)
         {
-            
+
             var productByMinMax = from product in _context.Products
                                   where product.Price > min && product.Price <= max
                                   select product;
