@@ -175,6 +175,9 @@
     </footer>
     @* button back to top *@
     <span class="mb-3" style="position:fixed;bottom:0;right:0;">
+    <div id="fb-root"></div>
+        <div id="fb-customer-chat" class="fb-customerchat">
+        </div>
         <a id="btnBackToTop" class="btn-sm text-decoration-none" role="button">
             <span class="h1">
                 <em class="bi bi-arrow-up-circle pe-4"></em>
@@ -185,42 +188,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @* <script type="text/javascript" src="~/bootstrapRating/bootstrap-rating.js"></script> *@
-    <script>
-        $("ul#categories").load("/Home/CategoriesLayout");
-        $("#btnBackToTop").click(function () {
-            event.preventDefault();
-            $("html, body").animate({ scrollTop: 0 }, "slow");
-        });
-        $('input.rating').rating({
-            filled: 'bi bi-star-fill',
-            empty: 'bi bi-star'
-        });
-        
-      
-    </script>
-    @* Facebook SDK for JavaScript *@
-    @*
-    <script>
-        window.fbAsyncInit = function () {
-            FB.init({
-                appId: '1098244710896566',
-                cookie: true,
-                xfbml: true,
-                version: '{api-version}'
-            });
-
-            FB.AppEvents.logPageView();
-
-        };
-
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script> *@
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
