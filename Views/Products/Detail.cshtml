@@ -2,13 +2,14 @@
 @{
     ViewData["Title"] = Model.NameProduct;
     var isSigned =(bool) ViewData["IsSigned"];
+    string pathImage = Model.Category + ".png";
 }
 @* Chi tiet San Pham *@
 <section id="chitiet ">
     <div class="container-xl align-items-center">
         <div class="row">
             <div class="col-md-6">
-                <img src="~/images/Tivi.png" class="img-fluid" alt="anhSanPham">
+                <img src="~/images/@pathImage" class="img-fluid" alt="anhSanPham">
             </div>
             <div class="col-md-6 pt-3">
                 <h1>@Html.DisplayFor(model=> model.NameProduct)</h1>
