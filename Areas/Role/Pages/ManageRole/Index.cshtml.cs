@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ElectronicShop.Areas.Role.Pages.ManageRole;
+namespace SportShop.Areas.Role.Pages.ManageRole;
 
 //Hiển thị các role
 /*

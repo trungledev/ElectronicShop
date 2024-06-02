@@ -1,4 +1,4 @@
-namespace ElectronicShop.Data;
+namespace SportShop.Data;
 
 public class Review
 {

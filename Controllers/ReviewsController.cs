@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace ElectronicShop.Controllers;
+namespace SportShop.Controllers;
 
 public class ReviewsController : Controller
 {

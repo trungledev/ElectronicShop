@@ -2,7 +2,7 @@ using System.Collections;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ElectronicShop.Controllers;
+namespace SportShop.Controllers;
 
 /*
     Sumary: 

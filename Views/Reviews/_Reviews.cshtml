@@ -1,12 +1,12 @@
-@model IEnumerable<ElectronicShop.Models.ReviewViewModel>
+@model IEnumerable<SportShop.Models.ReviewViewModel>
 @{
     #warning Mang nhieu sao
-  var starDetails = ViewData["StarDetail"] as ElectronicShop.Models.ReviewViewModel;
+  var starDetails = ViewData["StarDetail"] as SportShop.Models.ReviewViewModel;
   var averageStar = starDetails.AverageStar;
   var detailStars = starDetails.DetailStars as Dictionary<string,int>;
   var quantityAllReview = starDetails.QuantityAllReview;
 
-  var reviewOfUser = ViewData["ReviewOfUser"] as ElectronicShop.Models.ReviewViewModel;
+  var reviewOfUser = ViewData["ReviewOfUser"] as SportShop.Models.ReviewViewModel;
 
 }
         @if(reviewOfUser != null)

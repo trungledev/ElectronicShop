@@ -1,4 +1,4 @@
-namespace ElectronicShop.Services;
+namespace SportShop.Services;
 
 public class ServiceGetData<TModel> : IServiceGetData<TModel> where TModel : class
 {

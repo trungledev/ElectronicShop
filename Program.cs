@@ -1,21 +1,17 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ElectronicShop.Data;
-using ElectronicShop.Mail;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.User.RequireUniqueEmail = true;
-        options.SignIn.RequireConfirmedAccount = true;
+        //options.SignIn.RequireConfirmedAccount = true;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
@@ -25,46 +21,36 @@ builder.Services.Configure<IdentityOptions>(options =>{
     options.SignIn.RequireConfirmedEmail = true;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 });
-
-//Đăng ký dịch vụ mail
-var mailSettings = builder.Configuration.GetSection("MailSettings");
-builder.Services.Configure<MailSettings>(mailSettings);
-builder.Services.AddTransient<IEmailSender,SendMailService>();
+// Disable mail
+////Đăng ký dịch vụ mail
+//var mailSettings = builder.Configuration.GetSection("MailSettings");
+//builder.Services.Configure<MailSettings>(mailSettings);
+//builder.Services.AddTransient<IEmailSender,SendMailService>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-builder.Services.AddAuthentication()
-    .AddFacebook(facebookOptions =>
-    {
-        //Đọc thông tin Authentication:Facebook từ appsettings.json
-        IConfiguration facebookAuthNSection = builder.Configuration.GetSection("Authentication:Facebook");
 
-        facebookOptions.AppId = facebookAuthNSection["ClientId"];
-        facebookOptions.AppSecret = facebookAuthNSection["ClientSecret"];
-        facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
-    })
-    .AddGoogle(googleOptions =>
-    {
-        // Đọc thông tin từ appsettings.json
-        IConfiguration googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
-
-        googleOptions.ClientId = googleAuthNSection["ClientId"];
-        googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-    });
-
-    
+// Disable authentication with 
+//builder.Services.AddAuthentication()
+//    .AddFacebook(facebookOptions =>
+//    {
+//        facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
+//        facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+//        facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
+//    });
 builder.Services.AddAuthorization(option =>
 {
     option.AddPolicy("RoleAdmin", policy => policy.RequireClaim("Admin"));
 });
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    // This lambda determines whether user consent for non-essential 
-    // cookies is needed for a given request.
-    options.CheckConsentNeeded = context => true;
+// Disable cookie
+//builder.Services.Configure<CookiePolicyOptions>(options =>
+//{
+//    // This lambda determines whether user consent for non-essential 
+//    // cookies is needed for a given request.
+//    options.CheckConsentNeeded = context => true;
 
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-});
+//    options.MinimumSameSitePolicy = SameSiteMode.None;
+//});
 
 var app = builder.Build();
 

@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using ElectronicShop.Data;
+using SportShop.Data;
 
-namespace ElectronicShop.Areas.Identity.Pages.Account
+namespace SportShop.Areas.Identity.Pages.Account
 {
     public class ForgotPasswordModel : PageModel
     {

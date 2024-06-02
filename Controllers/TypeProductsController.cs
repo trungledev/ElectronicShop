@@ -1,4 +1,4 @@
-namespace ElectronicShop.Controllers;
+namespace SportShop.Controllers;
 
 public class TypeProductsController : LookupController<Category>
 {

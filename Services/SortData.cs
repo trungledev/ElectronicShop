@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace ElectronicShop.Services;
+namespace SportShop.Services;
 
 /*
     Sumary

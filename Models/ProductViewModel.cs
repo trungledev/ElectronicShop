@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ElectronicShop.Models;
+namespace SportShop.Models;
 
 public class ProductViewModel
 {

@@ -1,4 +1,4 @@
-namespace ElectronicShop.Controllers;
+namespace SportShop.Controllers;
 // [Authorize(Roles ="Admin")]
 public abstract class LookupController<TModel> : CRUDGeneric<TModel, LookupViewModel, int>
     where TModel : class

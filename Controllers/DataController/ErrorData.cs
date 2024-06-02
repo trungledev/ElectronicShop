@@ -1,4 +1,4 @@
-namespace ElectronicShop.Controllers.DataController;
+namespace SportShop.Controllers.DataController;
 
 public class ErrorData
 {

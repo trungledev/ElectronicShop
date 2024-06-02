@@ -1,4 +1,4 @@
-namespace ElectronicShop.Models.MessageViewModels;
+namespace SportShop.Models.MessageViewModels;
 
 public class CartMessageViewModel
 {

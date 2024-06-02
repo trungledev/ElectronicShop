@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 using System.Text.Encodings.Web;
 
-namespace ElectronicShop.Controllers;
+namespace SportShop.Controllers;
 
 public class SearchController : Controller
 {

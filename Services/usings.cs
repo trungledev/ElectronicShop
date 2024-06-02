@@ -1,2 +1,2 @@
-global using ElectronicShop.Data;
-global using ElectronicShop.Controllers;
+global using SportShop.Data;
+global using SportShop.Controllers;

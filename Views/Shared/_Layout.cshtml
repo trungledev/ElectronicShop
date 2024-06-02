@@ -4,10 +4,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Electronic Shop</title>
+    <title>@ViewData["Title"] - Sport Shop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ElectronicShop.styles.css" asp-append-version="true" />
+    @* Change icon *@
+    <link rel="icon" type="image/png" href="~/favicon.ico" sizes="32x32">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"
@@ -35,7 +38,7 @@
             <nav class=" navbar navbar-expand-md navbar-dark bg-dark px-3 py-2">
                 <div class="container">
                     <a asp-controller="Home" asp-action="Index" class="navbar-brand text-light fw-bold">
-                        Electronic Shop
+                        Sport Shop
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
                         aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,17 +85,6 @@
 
                             </li>
                             <li class="nav-item">
-                                <div >
-                                    <a class="nav-link text-white" asp-controller="News" asp-action="Index">
-                                        <em class="bi bi-newspaper"></em>
-                                        Tin tức
-                                    </a>
-                                    <ul class="dropdown-menu bg-light" id= "categories">
-                                    </ul>
-                                </div>
-                            </li>
-                            </li>
-                            <li class="nav-item">
                                 <div class="dropdown">
                                     <a class="nav-link text-white dropdown-toggle" role="button"
                                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -135,7 +127,7 @@
     <partial name="_CookieConsentPartial" /> *@
     <footer class="border-top footer text-muted" style="position:absolute;bottom:0;">
         <div class="container">
-            &copy; 2022 - ElectronicShop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2024 - Nguyen Thi Thao Chi - Sport shop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     @* button back to top *@

@@ -1,4 +1,4 @@
-namespace ElectronicShop.Models;
+namespace SportShop.Models;
 
 public class CartViewModel
 {

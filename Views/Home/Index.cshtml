@@ -18,8 +18,8 @@ var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
           </div>
           <div class="carousel-item active" data-bs-interval="20000">
             <div class="ratio ratio-16x9">
-              <video controls autoplay poster="images/poster.png">
-                <source src="videos/intro.mp4" type="video/mp4">
+              <video controls autoplay muted>
+                <source src="videos/intro2.mp4" type="video/mp4">
               </video>
             </div>
           </div>
@@ -47,6 +47,12 @@ var categoriesNames = ViewData["CategoriesNames"] as IList<string>;
         Danh mục sản phẩm
       </h2>
       <div class="list-group list-group-horizontal justify-content-around">
+          @if(categoriesNames.Count == 0)
+            {
+                <h5 class="text-secondary">
+                    No categories
+                </h5>
+            }
         @foreach (var categoryName in categoriesNames)
         {
         var pathImage = "images/" + categoryName + ".png";

@@ -1,4 +1,4 @@
-namespace ElectronicShop.Areas.Role.Pages.UserRole;
+namespace SportShop.Areas.Role.Pages.UserRole;
 
  [Authorize(Roles ="Guest")]
 public class IndexUserRoleModel : PageModel

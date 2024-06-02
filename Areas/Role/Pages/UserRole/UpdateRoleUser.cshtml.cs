@@ -1,4 +1,4 @@
-namespace ElectronicShop.Areas.Role.Pages.UserRole;
+namespace SportShop.Areas.Role.Pages.UserRole;
 
 public class UpdateRoleUserModel : PageModel
 {

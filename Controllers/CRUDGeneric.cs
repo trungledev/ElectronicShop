@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace ElectronicShop.Controllers;
+namespace SportShop.Controllers;
 
 public abstract class CRUDGeneric<TModel, TViewModel, TTypeId> : Controller
     where TModel : class
