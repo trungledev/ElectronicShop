@@ -5,7 +5,8 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Authorization;
 
-global using ElectronicShop.Models;
-global using ElectronicShop.Services;
-global using ElectronicShop.Controllers.DataController;
-global using ElectronicShop.Data;
+global using SportShop.Models;
+global using SportShop.Services;
+global using SportShop.Controllers.DataController;
+global using SportShop.Data;
+global using SportShop.Models.MessageViewModels;

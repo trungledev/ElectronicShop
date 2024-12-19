@@ -1,4 +1,4 @@
-﻿namespace ElectronicShop.Controllers;
+﻿namespace SportShop.Controllers;
 
 public class HomeController : Controller
 {
@@ -10,13 +10,28 @@ public class HomeController : Controller
         _logger = logger;
         _context = context;
     }
-
+    public IActionResult CategoriesLayout()
+    {
+        var Categories = _context.Categories.ToList();
+        IList<string> CategoriesNames = new List<string>();
+        foreach (var Category in Categories)
+        {
+            CategoriesNames.Add(Category.Name);
+        }
+        return PartialView("~/Views/Shared/_CategoriesProduct.cshtml", CategoriesNames);
+    }
     public IActionResult Index()
     {
-        var countTypeOfProduct = _context.Categories.ToList();
-        ViewData["CountTypeOfProduct"] = countTypeOfProduct;
+        var Categories = _context.Categories.ToList();
+        IList<string> CategoriesNames = new List<string>();
+        foreach (var Category in Categories)
+        {
+            CategoriesNames.Add(Category.Name);
+        }
+        ViewData["CategoriesNames"] = CategoriesNames;
         return View();
     }
+
     public IActionResult Privacy()
     {
         return View();
@@ -25,6 +40,6 @@ public class HomeController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new MessageViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new HomeMessageViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

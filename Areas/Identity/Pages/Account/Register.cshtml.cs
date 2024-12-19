@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using ElectronicShop.Data;
+using SportShop.Data;
 
-namespace ElectronicShop.Areas.Identity.Pages.Account
+namespace SportShop.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
@@ -31,13 +31,14 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
         private readonly IUserPhoneNumberStore<ApplicationUser> _phoneNumberStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-
+        private readonly  RoleManager<IdentityRole> _roleManager;
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -46,6 +47,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -83,7 +85,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             public string HoVaTen { get; set; }
             [Phone]
             [Display(Name = "Số điện thoại")]
-            [RegularExpression("^0(3[2-9]|5(6|8|9)|7(0|[6-9])|8[1-9]|9([0-4]|[6-9]))[0-9]{7}$", ErrorMessage ="So Dien Thoai khong phu hop")]
+            [RegularExpression("^0(3[2-9]|5(6|8|9)|7(0|[6-9])|8[1-9]|9([0-4]|[6-9]))[0-9]{7}$", ErrorMessage = "So Dien Thoai khong phu hop")]
             public string PhoneNumber { get; set; }
 
             [Required]
@@ -125,23 +127,27 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-                if(Input.PhoneNumber == null && Input.Email != null)
+                if (Input.PhoneNumber == null && Input.Email != null)
                 {
                     await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 }
-                else if(Input.PhoneNumber != null)
+                else if (Input.PhoneNumber != null)
                 {
                     await _userStore.SetUserNameAsync(user, Input.PhoneNumber, CancellationToken.None);
                 }
 
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                await _phoneNumberStore.SetPhoneNumberAsync(user,Input.PhoneNumber,CancellationToken.None);
+                await _phoneNumberStore.SetPhoneNumberAsync(user, Input.PhoneNumber, CancellationToken.None);
                 user.FullName = Input.HoVaTen;
-                
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
+                    //Set role default for user
+                    string nameRoleDefault = "Guest";
+                    var roleAdd = new IdentityRole(nameRoleDefault);
+                    await _roleManager.CreateAsync(roleAdd);
+                    await _userManager.AddToRoleAsync(user, nameRoleDefault);                    
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -201,7 +207,7 @@ namespace ElectronicShop.Areas.Identity.Pages.Account
         }
         private IUserPhoneNumberStore<ApplicationUser> GetUserPhoneNumberStore()
         {
-            if(!_userManager.SupportsUserPhoneNumber)
+            if (!_userManager.SupportsUserPhoneNumber)
             {
                 throw new NotSupportedException("The default UI requires a user store with phone number support.");
             }

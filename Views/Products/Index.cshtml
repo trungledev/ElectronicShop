@@ -1,4 +1,4 @@
-@model IEnumerable<ElectronicShop.Models.ProductViewModel>
+@model IEnumerable<SportShop.Models.ProductViewModel>
 
 @{
     Layout = "/Views/CRUD/_IndexLayout.cshtml";
@@ -57,13 +57,13 @@
             </td>
             <td>
                 <span class="w-100 d-inline-flex">
-                    <button data-id ="@item.ProductId" Category="button" class="btn btn-success me-3 btnCrud" data-controller="@controllerName" data-route-id="@item.ProductId" data-crud="Update" data-bs-toggle="modal" data-bs-target="#crudModal">
+                    <button data-id ="@item.Id" Category="button" class="btn btn-success me-3 btnCrud" data-controller="@controllerName" data-route-id="@item.Id" data-crud="Update" data-bs-toggle="modal" data-bs-target="#crudModal">
                     Edit
                     </button>
-                    <a class="btn btn-secondary me-3" asp-controller="Products" asp-action="Detail" asp-route-id="@item.ProductId" >
+                    <a class="btn btn-secondary me-3" asp-controller="Products" asp-action="Detail" asp-route-id="@item.Id" >
                     Detail
                     </a>
-                    <button data-id ="@item.ProductId" Category="button" class="btn btn-danger btnCrud" data-controller="@controllerName" data-route-id="@item.ProductId" data-crud="Delete" data-bs-toggle="modal" data-bs-target="#crudModal">
+                    <button data-id ="@item.Id" Category="button" class="btn btn-danger btnCrud" data-controller="@controllerName" data-route-id="@item.Id" data-crud="Delete" data-bs-toggle="modal" data-bs-target="#crudModal">
                     Delete
                     </button>
                 </span>

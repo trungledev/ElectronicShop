@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using ElectronicShop.Data;
+using SportShop.Data;
 
-namespace ElectronicShop.Areas.Identity.Pages.Account.Manage
+namespace SportShop.Areas.Identity.Pages.Account.Manage
 {
     public class SetPasswordModel : PageModel
     {

@@ -2,20 +2,20 @@ using System.Collections;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ElectronicShop.Controllers;
+namespace SportShop.Controllers;
 
 /*
     Sumary: 
        
 */
-[Authorize(Roles ="Admin")]
+[Authorize(Roles = "Guest")]
 public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
 {
-    private ElectronicShop.Models.MessageViewModel _errorModel;
+    
     private ViewData? _viewData;
     public ProductsController(ApplicationDbContext context) : base(context, "/Views/Products/")
     {
-        _errorModel = new ElectronicShop.Models.MessageViewModel { Message = "" };
+        
     }
     protected override string GetNamePage() => "Product";
     protected override string GetControllerName() => "Products";
@@ -27,12 +27,12 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         {
             Product product = new Product()
             {
-                ProductId = viewModel.ProductId,
+                ProductId = viewModel.Id,
                 Name = viewModel.NameProduct!,
                 Information = viewModel.Information!,
                 Price = viewModel.Price,
                 Quantity = viewModel.Quantity,
-                
+
                 CategoryId = viewModel.CategoryId,
                 ProducerId = viewModel.ProducerId,
                 StatusId = viewModel.StatusId
@@ -50,11 +50,13 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         ProductViewModel viewModel = new ProductViewModel();
         if (model != null)
         {
-            viewModel.ProductId = model.ProductId;
+            viewModel.Id = model.ProductId;
             viewModel.NameProduct = model.Name;
             viewModel.Information = model.Information;
             viewModel.Price = model.Price;
             viewModel.Quantity = model.Quantity;
+            viewModel.AverageStar = GetAverangeStarReview(model.ProductId);
+            viewModel.QuantityAllReview = GetQuantityReview(model.ProductId);
 
             viewModel.CategoryId = model.CategoryId;
             viewModel.ProducerId = model.ProducerId;
@@ -128,11 +130,13 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         {
             viewData.Add(new ProductViewModel()
             {
-                ProductId = product.ProductId,
+                Id = product.ProductId,
                 NameProduct = product.Name,
                 Information = product.Information,
                 Price = product.Price,
                 Quantity = product.Quantity,
+                QuantityAllReview = GetQuantityReview(product.ProductId),
+                AverageStar = GetAverangeStarReview(product.ProductId),
 
                 CategoryId = product.CategoryId,
                 ProducerId = product.ProducerId,
@@ -149,25 +153,58 @@ public class ProductsController : CRUDGeneric<Product, ProductViewModel, int>
         }
         return viewData;
     }
-    [HttpGet]
-    public IActionResult ShowProductByType(string valueOfProperty, int numberic)
+
+    private double GetAverangeStarReview(int productId)
     {
-        var type = _context.Categories.Where(x => x.Name == valueOfProperty).FirstOrDefault();
-        int id = 0;
-        if(type == null)
+        var allReview = _context.Reviews.Where(r => r.ProductId == productId);
+        if(allReview.Count() > 0)
         {
-            return NotFound();
+            return allReview.Average(x=> x.NumberOfStar);
         }
-        else
+        else 
         {
-            id = type.Id;
+            return 0;
         }
-        var products = _context.Products.Where(x => x.CategoryId == id).ToList();
-
-        IEnumerable<ProductViewModel> viewData = BuildListViewModel(products).Take(numberic);
-        string? viewPathShowProduct = _viewPath + "/ShowProduct";
-
-        return PartialView(viewPathShowProduct,viewData);
     }
 
+    private int GetQuantityReview(int productId)
+    {
+        var allReviews = _context.Reviews.Where(r => r.ProductId == productId).ToArray();
+        return allReviews.Length;
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult ShowProductsByCategory(int quantity)
+    {
+        string? viewPathShowProduct = _viewPath + "ShowProducts.cshtml";
+
+        var Categories = _context.Categories.ToList();
+        List<string> CategoriesNames = new List<string>();
+        List<Product> products  = new List<Product>();
+        foreach (var Category in Categories)
+        {
+            CategoriesNames.Add(Category.Name);
+            products.AddRange (_context.Products.Where(p => p.CategoryId == Category.Id).ToList().Take(quantity));
+        }
+        ViewData["CategoriesNames"] = CategoriesNames;
+     
+        IEnumerable<ProductViewModel> viewData = BuildListViewModel(products);
+
+        return PartialView(viewPathShowProduct, viewData);
+    }
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult Category(string categoryName)
+    {
+        ViewData["Title"] = categoryName;
+        ViewData["PathImage"] = "/images/" + categoryName + ".png";
+        var categoryFound = _context.Categories.Where(c => c.Name == categoryName).FirstOrDefault();
+        if(categoryFound == null)
+            return NotFound();
+        var products = _context.Products.Where(p => p.CategoryId == categoryFound.Id).ToList();
+        var productsViewModel = BuildListViewModel(products);
+        return View(productsViewModel);
+
+    }
 }

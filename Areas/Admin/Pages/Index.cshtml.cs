@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ElectronicShop.Areas.Admin.Pages;
+namespace SportShop.Areas.Admin.Pages;
 
 
 [Authorize(Roles ="Admin")]

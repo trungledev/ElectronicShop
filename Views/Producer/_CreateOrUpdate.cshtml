@@ -1,4 +1,4 @@
-@model ElectronicShop.Models.ProducerViewModel;
+@model SportShop.Models.ProducerViewModel;
 @{
     Layout = "/Views/CRUD/_CreateOrUpdateLayout.cshtml";
 }
@@ -12,14 +12,14 @@
         <input asp-for="Name" class="form-control">
         <span class="danger" asp-validation-for="Name" style="color:red;"></span>
     </div>
-    <div class=" mb-3">
+    @* <div class=" mb-3">
         <label class="form-label" asp-for="Address"></label>
         <input asp-for="Address" class="form-control">
         <span class="danger" asp-validation-for="Address" style="color:red;"></span>
-    </div>
+    </div> *@
     <div class=" mb-3">
         <label class="form-label" asp-for="PhoneNumber"></label>
-        <input asp-for="PhoneNumber" class="form-control">
+        <input asp-for="PhoneNumber" class="form-control" type="tel">
         <span class="danger" asp-validation-for="PhoneNumber" style="color:red;"></span>
     </div>
 </div>

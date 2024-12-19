@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using ElectronicShop.Data;
+using SportShop.Data;
 
-namespace ElectronicShop.Areas.Identity.Pages.Account
+namespace SportShop.Areas.Identity.Pages.Account
 {
     public class LogoutModel : PageModel
     {

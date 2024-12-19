@@ -1,18 +1,17 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
-
-namespace ElectronicShop.Areas.Role.Pages.UserRole;
+namespace SportShop.Areas.Role.Pages.UserRole;
 
 public class UpdateRoleUserModel : PageModel
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    public UpdateRoleUserModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    public UpdateRoleUserModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
     {
         _context = context;
         _roleManager = roleManager;
         _userManager = userManager;
+        _signInManager = signInManager;
     }
     public class InputModel
     {
@@ -53,7 +52,7 @@ public class UpdateRoleUserModel : PageModel
     {
         //them roleInput va xoa di nhung role con lai
         var rolesNameAll = _roleManager.Roles.Select(x => x.Name).ToList();
-        var roleNameInputs = Input.RoleNames;
+        var roleNameInputs = Input!.RoleNames;
         var rolesNameAbout = rolesNameAll.Except(roleNameInputs);
         var IdApplicationUser = Input.UserId;
         var roles = new List<IdentityRole>();
@@ -95,8 +94,8 @@ public class UpdateRoleUserModel : PageModel
                             ErrorMessage = " Error remove: " + resultRemoveRole.ToString();
                         }
                     }
-
                 }
+                await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToPage("./Index");
             }
             else

@@ -1,7 +1,7 @@
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ElectronicShop.Areas.Role.Pages.ManageRole;
+namespace SportShop.Areas.Role.Pages.ManageRole;
 public class AddRoleModel : PageModel
 {
     private readonly RoleManager<IdentityRole> _roleManager;

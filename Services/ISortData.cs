@@ -1,4 +1,4 @@
-namespace ElectronicShop.Services;
+namespace SportShop.Services;
 
 
 //  Sumary

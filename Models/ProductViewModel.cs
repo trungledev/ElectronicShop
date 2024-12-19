@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ElectronicShop.Models;
+namespace SportShop.Models;
 
 public class ProductViewModel
 {
-    public int ProductId { get; set; }
+    public int Id { get; set; }
 
     [Display(Name = "Tên")]
     [Required(ErrorMessage = "Can them data")]
@@ -37,7 +37,7 @@ public class ProductViewModel
     public string? Status { get; set; }
     public IEnumerable<SelectListItem>? Statuses { get; set; } 
 
-    public double? AverangeStarReview { get; set; }
-    public int? NumbericOfReview { get; set; }
+    public double AverageStar { get; set; }
+    public int QuantityAllReview { get; set; }
 
 }

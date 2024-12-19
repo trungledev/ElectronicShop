@@ -1,4 +1,4 @@
-@model IEnumerable<ElectronicShop.Models.ProducerViewModel>;
+@model IEnumerable<SportShop.Models.ProducerViewModel>;
 @{
     Layout = "/Views/CRUD/_IndexLayout.cshtml";
     ViewData["Title"]= ViewData["NamePage"];
@@ -15,9 +15,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.Address)
-            </th>
+            </th> *@
             <th>
             </th>
         </thead>
@@ -33,13 +33,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.PhoneNumber)
             </td>
-            <td>
+            @* <td>
                 @Html.DisplayFor(modelItem => item.Address)
-            </td>
+            </td> *@
             <td>
-                <button id="btnCrud" class="btn btn-success" data-controller="@controllerName" data-route-id="@item.Id"
+                <button  class="btn btn-success btnCrud" data-controller="@controllerName" data-route-id="@item.Id"
                     data-crud="Update" data-bs-toggle="modal" data-bs-target="#crudModal" type="button">Sửa</button> |
-                <button id="btnCrud" class="btn btn-danger" data-controller="@controllerName" data-route-id="@item.Id"
+                <button  class="btn btn-danger btnCrud" data-controller="@controllerName" data-route-id="@item.Id"
                     data-crud="Delete" data-bs-toggle="modal" data-bs-target="#crudModal" type="button">Xóa</button>
             </td>
         </tr>

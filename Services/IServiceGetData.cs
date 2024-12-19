@@ -1,4 +1,4 @@
-namespace ElectronicShop.Services;
+namespace SportShop.Services;
 
 /*
     Sumary:
@@ -6,6 +6,6 @@ namespace ElectronicShop.Services;
 */
 public interface IServiceGetData<TModel> where TModel : class
 {
-    public List<TModel> GetModels();
-
+    public List<TModel> GetAllModels();
+    public List<TModel> GetAnyModels(int quantity);
 }

@@ -1,25 +1,28 @@
-@model ElectronicShop.Models.ProductViewModel
-
-
+@model SportShop.Models.ProductViewModel
+@{
+    ViewData["Title"] = Model.NameProduct;
+    var isSigned =(bool) ViewData["IsSigned"];
+    string pathImage = Model.Category + ".png";
+}
 @* Chi tiet San Pham *@
 <section id="chitiet ">
     <div class="container-xl align-items-center">
         <div class="row">
             <div class="col-md-6">
-                <img src="~/images/Tivi.png" class="img-fluid" alt="anhSanPham">
+                <img src="~/images/@pathImage" class="img-fluid" alt="anhSanPham">
             </div>
             <div class="col-md-6 pt-3">
                 <h1>@Html.DisplayFor(model=> model.NameProduct)</h1>
                 <p class=" lead text-secondary mb-3">@Html.DisplayFor(model => model.Information)</p>
                 <h2 class="text-primary mb-3">@Html.DisplayFor(model => model.Price) đ</h2>
-                @* <input id="star" type="hidden" class="rating" name="sao" value="@Model.SoSaoTrungBinh" disabled /><span> ( @Model.SoLuot )</span> *@
+                <input id="star" type="hidden" class="rating" name="NumberOfStar" value="@Model.AverageStar" disabled /><span> ( @Model.QuantityAllReview )</span> 
                 <p class="lead">
                     Còn: @Html.DisplayFor(model => model.Quantity) (sp)</p>
                 <div>
                     
-                    <form id="themVaoGioHang" asp-controller="SanPhams" asp-action="ThemVaoGioHang" asp-route-id="@Model.ProductId" >
+                    <form id="themVaoGioHang" asp-controller="Products" asp-action="ThemVaoGioHang" asp-route-id="@Model.Id" >
                         <button class="btn btn-outline-secondary py-0 giam">-</button>
-                        <input type="number" value="1" max="99" min="1" name="soLuong"
+                        <input type="number" value="1" max="@Model.Quantity" min="1" name="soLuong"
                             style="width: 50px;">
                         <button class="btn btn-outline-secondary py-0 tang">+</button>
                         <div class="my-3">
@@ -34,43 +37,24 @@
         </div>
     </div>
 </section>
-@* 
+
 <section id="reviews" class="bg-light">
     <div class="container-lg my-5">
         <div class="text-center">
-            <h2>Đánh giá</h2>
+            <h2><b>Review</b></h2>
         </div>
         <!-- Collapse tao review -->
-        <div class="row justify-content-center border-bottom">
+        <div class="row justify-content-center">
             <div class="col-md-8  text-center">
-                <p>
-                    //data-bs-toggle="collapse" data-bs-target="#taoReview" aria-expanded="false" aria-controls="collapseExample" 
+                <div class="mb-3" id="btnCreateReview">
+                    @* data-bs-toggle="collapse" data-bs-target="#createReview" aria-expanded="false" aria-controls="collapseExample"  *@
                     <button id="btnCollapseTao" class="btn btn-primary" type="button" >
-                        Tạo bài đánh giá
+                        Review của bạn
                     </button>
-                </p>
-                <div class="collapse" id="taoReview">
-                    <div class="card card-body">
-                        
-                        <form id="postReview" asp-controller="SanPhams" asp-action="ThemReview" asp-route-id="@Model.ProductId"  enctype="application/x-www-form-urlencoded"  > 
-                            <div class="mb-3">
-                                <label for="sao"> Đánh giá: </label>
-                                <input id="sao" type="hidden" class="rating" min="1" name="SoSao" />
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="TieuDe" id="tieuDe" placeholder="Tieu De" autocomplete="off" required>
-                                <label for="tieuDe">Tiêu đề</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <textarea class="form-control" name="NoiDung" placeholder="Leave a comment here"
-                                    id="noiDung" style="height: auto;" required></textarea>
-                                <label for="noiDung">Nội dung</label>
-                            </div>
-                            <button class="btn btn-secondary pe-3" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#taoReview" aria-expanded="false"
-                                aria-controls="collapseExample">Hủy</button>
-                            <button class="btn btn-success" id="toastBtnTaoReview" type="button">Tạo</button>
-                        </form>
+                </div>
+                <div class="collapse" id="createReview">
+                    <div class="collapse-body mb-5">
+                       
                     </div>
                 </div>
             </div>
@@ -83,7 +67,7 @@
             </div>
         </div>
     </div>
-</section> *@
+</section>
 
 @* Toast for thong bao*@
 <div class="position-fixed top-50 start-50 translate-middle p-3" style="z-index: 11">
@@ -97,61 +81,42 @@
         </div>
     </div>
 </div>
+@if(isSigned)
+{
+    <script>
+       $("button#btnCollapseTao").click(function(){
+            $.get("/Reviews/CreateOrUpdate?productId= " + @Model.Id,function(data){
+                $("div.collapse-body").html(data);
+                $('div#createReview').collapse('toggle');            
+       });
+        });
+    </script>
+}
+else
+{
+    <script>
+    $("button#btnCollapseTao").click(function(){  
+        var productId = @Model.Id; 
+        $.get("/Reviews/CreateOrUpdate?productId=" + productId,function(data){
+                    $(".toast-body").html(data);
+                    ShowToast();
+                });
+    });
+    </script>
+}
 
-
-
-<script>
+<script type="text/javascript">
     GetReviews();
     $(document).ready(function () {  
-        $("button#btnCollapseTao").click(function(){
-            var idSanPham = @Model.ProductId;
-            $.get("/Reviews/DaReview?idSanPham=" + idSanPham,function(data){
-                $(".toast-body").html(data);
-            } );
-        })
-        //Thong bao loi Them Review
-        $("button#toastBtnTaoReview").click(function (event) {
-            event.preventDefault();
-            
-            var formData = new FormData();
-            var soSao = $("input#sao").val();
-            var tieuDe =  $("input#tieuDe").val();
-            var noiDung = $("textarea#noiDung").val();
-            formData.append("SoSao", soSao );
-            formData.append("TieuDe",tieuDe);
-            formData.append("NoiDung",noiDung);
-           
-            var idSanPham = @Model.ProductId;
-
-            $.ajax ({
-            type: "POST",
-            url: "/Reviews/ThemReview?idSanPham=" + encodeURI(idSanPham),
-            data: formData,
-            encode: true,
-            dataType: "html",
-            contentType: false,
-            async: true,
-            processData: false,
-            cache: false,
-            success: (function (data) {
-                $(".toast-body").html(data);
-                GetReviews();
-                $("#postReview")[0].reset();
-                $("div#taoReview").collapse("hide");
-                //alert("thanh kong k?" + " x " + data);
-               }),
-            error: function(){
-                alert("Loi Me no roi");
-            }
-            });
-        });
+        
         //Thong Bao loi them vao gio hang
         $("button#toastBtnThemVaoGioHang").click(function(){
-            var idSanPham = @Model.ProductId;
+            var idSanPham = @Model.Id;
             var valInput = $(this).parent().siblings("input").val();
-            var formData= "id=" + idSanPham + "&soLuong=" + valInput;
-            $.post("/SanPhams/ThemVaoGioHang?" + encodeURI(formData),function(data){
+            var formData= "id=" + idSanPham + "&quantity=" + valInput;
+            $.post("/Carts/AddToCart?" + encodeURI(formData),function(data){
                 $(".toast-body").html(data);
+                ShowToast();
             });
         });
         $(document).click(function(){
@@ -161,7 +126,7 @@
             //toast.hide();
 
             //Dong modal
-            // $('.collapse').collapse('toggle');
+            // $('div#taoReview').collapse('toggle');
         });
         //Nut tang giam input
         $("button.tang").click(function () {
@@ -187,20 +152,19 @@
     };
     function GetReviews()
     {
-        var idSanPham = @Model.ProductId;
+        var productId = @Model.Id;
         $.ajax({
             type: "GET",
-            url:"/Reviews/GetReviewViewModel",
-            data: { idSanPham : idSanPham},
+            url:"/Reviews/Index",
+            data: { productId : productId},
             dataType:"html",
             contentType:false,
             success:(function(data){
                 $(".review-body").html(data);
             }),
             error: (function(data){
-                alert("Loi Me no roi");
+                alert("Khong hien thi duoc review");
             })
         });
     }
-
 </script> 

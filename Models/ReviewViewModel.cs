@@ -1,17 +1,17 @@
-namespace ElectronicShop.Models;
+namespace SportShop.Models;
 
 public class ReviewViewModel
 {
-    public int SanPhamId { get; set; }
+    public int ProductId { get; set; }
     [Display(Name ="Tiêu đề")]
-    public string? TieuDe { get; set; }
+    public string Title { get; set; } = string.Empty;
     [Display(Name ="Nội dung")]
-    public string? NoiDung { get; set; }
-    public double SoSaoTrungBinh { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public double AverageStar { get; set; }
     [Display(Name ="Số sao")]
-    public double SoSao { get; set; }
-    public IDictionary<string,int>? SoSaoCuThe {get; set; }
-    public int SoLuot { get; set; }
-    public DateTime NgayDang { get; set; }
-    public string? TacGia { get; set; }
+    public double NumberOfStar { get; set; }
+    public IDictionary<string,int>? DetailStars {get; set; }
+    public int QuantityAllReview { get; set; }
+    public DateTime Time { get; set; }
+    public string Author { get; set; } = string.Empty;
 }

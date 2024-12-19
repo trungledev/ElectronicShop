@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ElectronicShop.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,31 +11,46 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.User.RequireUniqueEmail = true;
+        //options.SignIn.RequireConfirmedAccount = true;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(options =>{
+    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+});
+// Disable mail
+////Đăng ký dịch vụ mail
+//var mailSettings = builder.Configuration.GetSection("MailSettings");
+//builder.Services.Configure<MailSettings>(mailSettings);
+//builder.Services.AddTransient<IEmailSender,SendMailService>();
+
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-builder.Services.AddAuthentication()
-    .AddFacebook(facebookOptions =>
-    {
-        facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
-        facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-        facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
-    });
+
+// Disable authentication with 
+//builder.Services.AddAuthentication()
+//    .AddFacebook(facebookOptions =>
+//    {
+//        facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
+//        facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+//        facebookOptions.CallbackPath = "/dang-nhap-tu-facebook";
+//    });
 builder.Services.AddAuthorization(option =>
 {
     option.AddPolicy("RoleAdmin", policy => policy.RequireClaim("Admin"));
 });
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    // This lambda determines whether user consent for non-essential 
-    // cookies is needed for a given request.
-    options.CheckConsentNeeded = context => true;
+// Disable cookie
+//builder.Services.Configure<CookiePolicyOptions>(options =>
+//{
+//    // This lambda determines whether user consent for non-essential 
+//    // cookies is needed for a given request.
+//    options.CheckConsentNeeded = context => true;
 
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-});
+//    options.MinimumSameSitePolicy = SameSiteMode.None;
+//});
 
 var app = builder.Build();
 

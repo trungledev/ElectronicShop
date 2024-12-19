@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ElectronicShop.Areas.Role.Pages.ManageRole;
+namespace SportShop.Areas.Role.Pages.ManageRole;
 
 //Hiển thị các role
 /*
@@ -9,7 +9,7 @@ namespace ElectronicShop.Areas.Role.Pages.ManageRole;
     Edit
     Delete
 */
-[Authorize(Roles ="Developer")]
+ [Authorize(Roles ="Guest")]
 public class IndexRoleModel : PageModel
 {
     private readonly RoleManager<IdentityRole> _roleManager;
